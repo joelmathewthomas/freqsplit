@@ -17,7 +17,6 @@ grpcio==1.68.1
 h5py==3.12.1
 idna==3.10
 iniconfig==2.0.0
-ipython==8.31.0
 jedi==0.19.2
 joblib==1.4.2
 keras==3.7.0
@@ -29,7 +28,6 @@ llvmlite==0.43.0
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
-matplotlib==3.10.0
 matplotlib-inline==0.1.7
 mdurl==0.1.2
 ml-dtypes==0.4.1
@@ -58,7 +56,6 @@ python-dateutil==2.9.0.post0
 requests==2.32.3
 rich==13.9.4
 scikit-learn==1.6.0
-scipy==1.14.1
 setuptools==75.6.0
 six==1.17.0
 soundfile==0.12.1
