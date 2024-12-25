@@ -1,12 +1,8 @@
 import tensorflow as tf
 import tensorflow_hub as hub
+import librosa
 import numpy as np
 import csv
-
-import matplotlib.pyplot as plt
-from IPython.display import Audio
-from scipy.io import wavfile
-from scipy import signal
 
 model = hub.load('https://tfhub.dev/google/yamnet/1')
 
@@ -24,27 +20,17 @@ def class_names_from_csv(class_map_scv_text):
 class_map_path = model.class_map_path().numpy()
 class_names = class_names_from_csv(class_map_path)
 
-# Resample audio to 16K
-def ensure_sample_rate(original_sample_rate, waveform, desired_sample_rate=16000):
-    """Resample waveform if required."""
-    if original_sample_rate != desired_sample_rate:
-        desired_length = int(round(float(len(waveform)) / original_sample_rate * desired_sample_rate))
-        waveform = signal.resample(waveform, desired_length)
-    return desired_sample_rate, waveform
-
-# wav_file_name = 'speech_whistling2.wav'
 wav_file_name = 'cafe_crowd_talk.wav'
-sample_rate, wav_data = wavfile.read(wav_file_name, 'rb')
-sample_rate, wav_data = ensure_sample_rate(sample_rate, wav_data)
+waveform, sample_rate = librosa.load(wav_file_name, sr=16000)
 
 # Show some basic information about the audio.
-duration = len(wav_data)/sample_rate
+duration = len(waveform)/sample_rate
 print(f'Sample rate: {sample_rate} Hz')
 print(f'Total duration: {duration:.2f}s')
-print(f'Size of the input: {len(wav_data)}')
+print(f'Size of the input: {len(waveform)}')
 
-# The wav_data needs to be normalized to values in [-1.0, 1.0]
-waveform = wav_data / tf.int16.max
+# The waveform needs to be normalized to values in [-1.0, 1.0] (librosa load already does this)
+# No need to do this as librosa already normalizes# The wav_data needs to be normalized to values in [-1.0, 1.0]
 
 # Execute the Model
 # Check the output.
