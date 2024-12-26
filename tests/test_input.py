@@ -1,5 +1,5 @@
 import pytest
-from  src.input.file_reader import read_audio
+from src.input.file_reader import read_audio
 from src.input.format_checker import is_supported_format
 
 def test_read_audio():
