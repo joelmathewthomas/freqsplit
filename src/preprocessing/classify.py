@@ -3,6 +3,11 @@ import tensorflow_hub as hub
 import librosa
 import numpy as np
 import csv
+import os
+
+# Disable CUDA
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 
 model = hub.load('https://tfhub.dev/google/yamnet/1')
 
