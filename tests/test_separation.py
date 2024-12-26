@@ -20,9 +20,9 @@ def test_demucs_separation_with_preprocessing():
     waveform, samplerate = read_audio(input_file)
     waveform = trim_audio(waveform, samplerate)
 
-    # Resample to 41000Hz
-    if samplerate != 41000:
-        print("Resampling audio to 41Khz")
+    # Resample to 44100Hz
+    if samplerate != 44100:
+        print("Resampling audio to 44.1Khz")
         waveform, samplerate = resample(waveform, samplerate, 41000)
 
     # Create a temporary file to save the processed audio
