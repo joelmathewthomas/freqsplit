@@ -4,7 +4,7 @@ import soundfile as sf
 import tempfile
 from pathlib import Path
 
-def separate_audio_with_demucs(input_file, sample_rate, output_dir: str):
+def separate_audio_with_demucs(input_file, output_dir: str):
     """
     Use subprocess to run Demucs separation on an input audio file.
     Parameters:

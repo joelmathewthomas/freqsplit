@@ -36,7 +36,7 @@ def test_demucs_separation_with_preprocessing():
     new_audio_path = os.path.join(dir_path, f"{file_name}.wav")
     os.rename(temp_audio_path, new_audio_path)
 
-    separate_audio_with_demucs(new_audio_path, samplerate, output_path)
+    separate_audio_with_demucs(new_audio_path, output_path)
 
     # Verify the htdemucs folder exists
     demucs_dir = Path(output_path) / 'htdemucs'
