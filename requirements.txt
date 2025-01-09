@@ -38,6 +38,7 @@ llvmlite==0.43.0
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
+matplotlib==3.10.0
 matplotlib-inline==0.1.7
 mdurl==0.1.2
 ml-dtypes==0.4.1
@@ -77,6 +78,9 @@ pure_eval==0.2.3
 pycparser==2.22
 Pygments==2.18.0
 pyparsing==3.2.0
+PyQt6==6.8.0
+PyQt6-Qt6==6.8.1
+PyQt6_sip==13.9.1
 pytest==8.3.4
 python-dateutil==2.9.0.post0
 PyYAML==6.0.2
