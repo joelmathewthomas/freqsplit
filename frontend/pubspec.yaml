@@ -1,5 +1,5 @@
-name: audioench
-description: "A new Flutter project."
+name: freq_split_enhance
+description: "An open-source audio source separator and noise reduction program"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -42,6 +42,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   image_picker: ^1.1.2
   audioplayers: ^6.1.0
+  rename_app: ^1.6.2
 
 dev_dependencies:
   flutter_test:
