@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -25,6 +26,21 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Set the display mode to 120Hz if available
+    _setRefreshRate();
+  }
+
+  // Function to set the refresh rate to 120Hz
+  void _setRefreshRate() async {
+    
+    // Set the highest display mode
+    await FlutterDisplayMode.setHighRefreshRate();
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
