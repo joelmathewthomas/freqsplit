@@ -30,11 +30,11 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     super.initState();
 
-    // Set the display mode to 120Hz if available
+    // Set the display mode to the highest available
     _setRefreshRate();
   }
 
-  // Function to set the refresh rate to 120Hz
+  // Function to set the refresh rate to the highest available
   void _setRefreshRate() async {
     
     // Set the highest display mode
