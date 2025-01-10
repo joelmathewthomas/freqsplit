@@ -14,7 +14,7 @@ def test_demucs_separation_with_preprocessing():
     Test to ensure Demucs separation works with preprocessing and creates expected outputs.
     """
 
-    input_file = "./samples/am_contra_heart_peripheral.wav"
+    input_file = "tests/test_audio/am_contra_heart_peripheral.wav"
     file_name = Path(input_file).stem
     output_path = "/tmp/demucs-test"
     waveform, samplerate = read_audio(input_file)
