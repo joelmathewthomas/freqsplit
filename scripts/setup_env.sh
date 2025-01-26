@@ -27,10 +27,6 @@ pip install -r requirements/env.txt
 deactivate
 
 source envs/env_tensorflow/bin/activate
+echo "Installing dependencies in virtual environment env_tensorflow"
 pip install -r requirements/env_tensorflow.txt
 deactivate
-
-echo "Creating site-packages.pth"
-touch site-packages.pth
-echo "env/env/lib/python3.12/site-packages" >> site-packages.pth
-echo "env/env_tensorflow/lib/python3.12/site-packages" >> site-packages.pth
