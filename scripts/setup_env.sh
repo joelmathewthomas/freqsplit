@@ -32,5 +32,5 @@ deactivate
 
 echo "Creating site-packages.pth"
 touch site-packages.pth
-echo "env/env/lib/python3.12/site-packages" >> site-packages.pth
-echo "env/env_tensorflow/lib/python3.12/site-packages" >> site-packages.pth
+echo "envs/env/lib/python3.12/site-packages" >> site-packages.pth
+echo "envs/env_tensorflow/lib/python3.12/site-packages" >> site-packages.pth
