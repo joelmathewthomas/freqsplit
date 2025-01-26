@@ -1,3 +1,14 @@
+#!/bin/bash
+
+# Check if the script is running in the root directory of the project
+PROJECT_ROOT="freq-split-enhance"
+CURRENT_DIR=$(basename "$PWD")
+
+if [ "$CURRENT_DIR" != "$PROJECT_ROOT" ]; then
+    echo "This script must be run in the root directory of the project: '$PROJECT_ROOT'."
+    exit 1
+fi
+
 echo "Setting up virtual environments"
 
 mkdir envs
