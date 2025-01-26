@@ -6,6 +6,7 @@ __pycache__/
 
 # Ignore virtual environment folder
 venv/
+envs/
 
 # Ignore other common files
 *.pyc
@@ -14,3 +15,6 @@ venv/
 
 # Ignore VSCode config
 .vscode/
+
+# site-packages.pth
+site-packages.pth
