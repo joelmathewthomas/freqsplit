@@ -27,9 +27,13 @@ def separate(audio, model_name='mpariente/ConvTasNet_WHAM!_sepclean'):
         with torch.no_grad():
             separated_sources = model(audio_tensor)
         
-        # Convert separated sources to NumPy arrays and remove batch dimension
-        separated_sources_np = [src.squeeze(0).cpu().numpy() for src in separated_sources]
+        # Remove batch dimension
+        separated_sources = separated_sources.squeeze(0)  # Shape: (num_sources, num_samples)
         
-        return separated_sources_np
+        # Split into list of sources
+        separated_sources_np = separated_sources.cpu().numpy()  # Convert to NumPy
+        separated_sources_list = [separated_sources_np[i, :] for i in range(separated_sources_np.shape[0])]
+        
+        return separated_sources_list
     except Exception as e:
         raise RuntimeError(f"Error during separation: {e}")

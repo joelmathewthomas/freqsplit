@@ -14,8 +14,7 @@ def main(input_audio_path, output_dir, model_name="mpariente/ConvTasNet_WHAM!_se
         
         separated_sources = separate(audio, model_name)
         print(f"Separated {len(separated_sources)} sources")
-        print("Separated sources are", separated_sources)
-
+        
         for i, source in enumerate(separated_sources):
             output_path = os.path.join(output_dir, f"source_{i+1}.wav")
             export_audio(source, output_path, sr)
@@ -26,7 +25,7 @@ def main(input_audio_path, output_dir, model_name="mpariente/ConvTasNet_WHAM!_se
         
 
 if __name__ == "__main__":
-    input_audio_path = "/home/joel/Downloads/female_female_speech.wav"  
+    input_audio_path = "/home/joel/Downloads/wham/female-female-mixture.wav"  
     output_dir = "/tmp/convtasnet"  
     main(input_audio_path, output_dir)
 
