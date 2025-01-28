@@ -1,13 +1,12 @@
 import torch
 from asteroid.models import ConvTasNet
 
-def separate(audio, sr, model_name='mpariente/ConvTasNet_WHAMR_enhsingle'):
+def separate(audio, model_name='mpariente/ConvTasNet_WHAMR_enhsingle'):
     """
     Separates audio into sources using a pretrained Asteroid model.
 
     Args:
         audio (numpy.ndarray): The audio time series (1D numpy array).
-        sr (int): Sampling rate of the audio.
         model_name (str): Name of the pretrained model from Asteroid. Default is 'mpariente/ConvTasNet_WHAMR_enhsingle'.
 
     Returns:
