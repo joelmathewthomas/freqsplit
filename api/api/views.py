@@ -1,31 +1,25 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from .tasks import process_uploaded_file
-from .forms import UploadFileForm
 import os
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 
-# Create your views here.
-def handle_uploaded_file(f, file_path):
-    with open(file_path, 'wb+') as destination:
-        for chunk in f.chunks():
+UPLOAD_DIR = "/tmp/freq-split-enhance"
+
+# Ensure the temp directory exists
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@api_view(['POST'])
+def upload_audio(request):
+    """Handles audio file upload and saves it to /tmp/freq-split-enhance"""
+    if 'file' not in request.FILES:
+        return Response({"Error: No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    audio_file = request.FILES['file']
+    file_path = os.path.join(UPLOAD_DIR, audio_file.name)
+    
+    # Save the uploaded file
+    with open(file_path, 'wb') as destination:
+        for chunk in audio_file.chunks():
             destination.write(chunk)
-
-def upload(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = form.cleaned_data['file']
-            file_path = os.path.join('uploads', file.name)  # Change 'uploads' to your desired directory
-            handle_uploaded_file(file, file_path)
-            task = process_uploaded_file.delay(file_path)
-            return JsonResponse({'task_id': task.id})
-
-    else:
-        form = UploadFileForm()
-    return render(request, 'upload.html', {'form': form})
-
-from celery.result import AsyncResult
-
-def check_task_status(request, task_id):
-    task_result = AsyncResult(task_id)
-    return JsonResponse({'status': task_result.status, 'result': task_result.result})
+            
+    return Response({"Status": "File uploaded successfully", "file_path": file_path}, status=status.HTTP_201_CREATED)
