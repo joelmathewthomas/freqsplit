@@ -18,7 +18,7 @@ An evolving **audio processing pipeline** designed to separate and enhance audio
 📁 Project Structure
 
 ```bash
-freq-split-enhance/
+freqsplit/
 ├── api/                # API implementation (future work)
 ├── client/             # Client-side interactions (future work)
 ├── LICENSE             # License file
