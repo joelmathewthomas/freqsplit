@@ -16,9 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from api.views import upload
+from api.views import upload_audio
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('upload/',upload)
+    path('api/upload', upload_audio, name='upload_audio')
 ]

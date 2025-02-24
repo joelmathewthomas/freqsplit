@@ -1,6 +1,6 @@
 import pytest
-from src.input.file_reader import read_audio
-from src.input.format_checker import is_supported_format
+from freqsplit.input.file_reader import read_audio
+from freqsplit.input.format_checker import is_supported_format
 
 def test_read_audio():
     file_path = "tests/test_audio/cafe_crowd_talk.aiff"

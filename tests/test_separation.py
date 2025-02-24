@@ -3,12 +3,12 @@ import pytest
 import tempfile
 import soundfile as sf
 from pathlib import Path
-from src.input.file_reader import read_audio
-from src.preprocessing.trim import trim_audio
-from src.preprocessing.resample import resample
-from src.separation.demucs_wrapper import separate_audio_with_demucs
-from src.separation.convtasnet_wrapper import separate
-from src.postprocessing.audio_writer import export_audio
+from freqsplit.input.file_reader import read_audio
+from freqsplit.preprocessing.trim import trim_audio
+from freqsplit.preprocessing.resample import resample
+from freqsplit.separation.demucs_wrapper import separate_audio_with_demucs
+from freqsplit.separation.convtasnet_wrapper import separate
+from freqsplit.postprocessing.audio_writer import export_audio
 
 
 def test_demucs_separation_with_preprocessing():
