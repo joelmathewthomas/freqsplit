@@ -1,4 +1,4 @@
-# freq-split-enhance
+# freqsplit
 
 An evolving **audio processing pipeline** designed to separate and enhance audio components using open-source tools. The project aims to provide a modular framework for working with raw audio files, enabling separation, refinement, and post-processing.
 
@@ -21,18 +21,22 @@ An evolving **audio processing pipeline** designed to separate and enhance audio
 freq-split-enhance/
 ├── api/                # API implementation (future work)
 ├── client/             # Client-side interactions (future work)
-├── src/                # Core processing modules
-│   ├── input/          # Audio input handling
-│   ├── preprocessing/  # Normalization, resampling, trimming
-│   ├── separation/     # Source separation with Demucs
-│   ├── postprocessing/ # Post-processing and saving results
-│   ├── refinement/     # Noise reduction and enhancement
-│   ├── spectogram/     # Spectrogram generation and analysis
-├── tests/              # Unit tests
-├── requirements.txt    # Dependencies
+├── LICENSE             # License file
+├── pyproject.toml      # Project metadata and dependencies
+├── pytest.ini          # Pytest configuration
 ├── README.md           # Project documentation
-├── LICENSE             # License information
-└── pytest.ini          # Pytest configuration
+├── requirements.txt    # Python dependencies
+├── src/                # Core processing modules
+│   ├── freqsplit/      # Main package directory
+│   │   ├── __init__.py # Package initialization
+│   │   ├── input/      # Audio input handling
+│   │   ├── preprocessing/  # Normalization, resampling, trimming
+│   │   ├── separation/     # Source separation with Demucs
+│   │   ├── postprocessing/ # Post-processing and saving results
+│   │   ├── refinement/     # Spectrogram-based enhancement
+│   │   ├── spectogram/     # Spectrogram generation and analysis
+├── tests/              # Unit and integration tests
+└── venv/               # Virtual environment (should be excluded from version control)
 ```
 
 ### 📝 Wiki
