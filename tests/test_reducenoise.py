@@ -1,7 +1,7 @@
 import os
 import pytest
 import soundfile as sf
-from src.refinement.deepfilternet_wrapper import noisereduce
+from freqsplit.refinement.deepfilternet_wrapper import noisereduce
 
 def test_noisereduce():
     """Test noise reduction function to ensure output is valid."""

@@ -1,11 +1,11 @@
 import pytest
 import librosa
 import numpy as np
-from src.preprocessing.normalize import normalize_audio
-from src.preprocessing.trim import trim_audio
-from src.preprocessing.classify import classify_audio
-from src.input.file_reader import read_audio
-from src.preprocessing.resample import resample
+from freqsplit.preprocessing.normalize import normalize_audio
+from freqsplit.preprocessing.trim import trim_audio
+from freqsplit.preprocessing.classify import classify_audio
+from freqsplit.input.file_reader import read_audio
+from freqsplit.preprocessing.resample import resample
 
 def test_normalize_audio():
     file_path = "tests/test_audio/cafe_crowd_talk.aiff"

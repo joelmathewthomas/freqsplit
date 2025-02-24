@@ -18,3 +18,7 @@ envs/
 
 # site-packages.pth
 site-packages.pth
+
+# Ignore egg-info directory
+src/freqsplit.egg-info/
+
