@@ -2,6 +2,7 @@ import os
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from freqsplit.preprocessing.classify import classify_audio
 
 UPLOAD_DIR = "/tmp/freq-split-enhance"
 
@@ -21,5 +22,13 @@ def upload_audio(request):
     with open(file_path, 'wb') as destination:
         for chunk in audio_file.chunks():
             destination.write(chunk)
+
+    audio_class = classify_audio(file_path)
             
-    return Response({"Status": "File uploaded successfully", "file_path": file_path}, status=status.HTTP_201_CREATED)
+    return Response(
+        {
+            "Status": "File uploaded successfully",
+            "file_path": file_path,
+            "audio_class": audio_class
+            }, status=status.HTTP_201_CREATED,
+        )
