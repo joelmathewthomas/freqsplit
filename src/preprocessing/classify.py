@@ -5,6 +5,10 @@ import numpy as np
 import csv
 import os
 
+
+# Force TensorFlow to use only CPU
+tf.config.set_visible_devices([], 'GPU')
+
 model = hub.load('https://tfhub.dev/google/yamnet/1')
 
 #Find the name of the class with the top score when mean-aggregated across frames.
