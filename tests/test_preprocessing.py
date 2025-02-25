@@ -24,8 +24,9 @@ def test_trim_audio():
 
 def test_classify():
     file_path = "tests/test_audio/cafe_crowd_talk.wav"
+    waveform, sr = read_audio(file_path, 16000, mono=True)
     expected_class = "Speech"
-    predicted_class = classify_audio(file_path)
+    predicted_class = classify_audio(waveform, sr)
 
     assert predicted_class == expected_class , f"Expected {expected_class}, but got {predicted_class}"
 

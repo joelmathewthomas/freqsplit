@@ -3,8 +3,6 @@ import tensorflow_hub as hub
 import librosa
 import numpy as np
 import csv
-import os
-
 
 # Force TensorFlow to use only CPU
 tf.config.set_visible_devices([], 'GPU')
@@ -22,26 +20,34 @@ def class_names_from_csv(class_map_scv_text):
     return class_names
 
 # Main function to process audio and classify
-def classify_audio(file_path):
+def classify_audio(waveform, sr):
     """
     Given an audio file, this function loads the audio, resamples it, 
     normalizes it, and runs it through the YAMNet model to classify the sound.
 
     Args:
-    - file_path (str): Path to the audio file (WAV, MP3, etc.).
+    - waveform (numpy.ndarray): waveform of the audio file (WAV, MP3, etc.).
 
     Returns:
     - str: Predicted class label of the audio.
     """
-    # Load audio using librosa (this handles both loading, resampling, and conversion to mono)
-    waveform, sample_rate = librosa.load(file_path, sr=16000, mono=True)  # Ensuring 16k sample rate and mono
-
+    
+    # Check if the sampling rate is 16000Hz
+    try:
+        if(sr!=16000):
+            raise RuntimeError
+    except Exception:
+        raise RuntimeError(f"The audio is not sampled at 16000Hz, failed to classify audio.")
+    
     # Normalize the waveform to [-1.0, 1.0] (librosa already returns normalized values)
     waveform = waveform / np.max(np.abs(waveform))
 
     # Execute the YAMNet model
-    scores, embeddings, spectrogram = model(waveform)
-    
+    try:
+        scores, embeddings, spectrogram = model(waveform)
+    except Exception as e:
+        raise RuntimeError(f"Error: Failed to classify audio: {e}")
+        
     # Extract the class names from the model
     class_map_path = model.class_map_path().numpy()
     class_names = class_names_from_csv(class_map_path)
