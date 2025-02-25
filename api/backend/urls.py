@@ -19,10 +19,12 @@ from django.urls import path
 from api.views import upload_audio
 from api.views import normalize_audio
 from api.views import trim_audio
+from api.views import resample_audio
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/upload', upload_audio, name='upload_audio'),
     path('api/normalize', normalize_audio, name="normalize_audio"),
-    path('api/trim', trim_audio, name='trim_audio')
+    path('api/trim', trim_audio, name='trim_audio'),
+    path('api/resample', resample_audio, name='resample_audio')
 ]

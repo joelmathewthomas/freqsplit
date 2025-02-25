@@ -3,6 +3,7 @@ from freqsplit.input.file_reader import read_audio
 from freqsplit.preprocessing.classify import classify_audio
 from freqsplit.preprocessing.normalize import normalize_audio
 from freqsplit.preprocessing.trim import trim_audio 
+from freqsplit.preprocessing.resample import resample
 from freqsplit.postprocessing.audio_writer import export_audio
 
 @shared_task
@@ -28,6 +29,7 @@ def normalize_audio_task(file_path):
         export_audio(normalized_audio, file_path, sr) # Save file
         return True
     except Exception as e:
+        raise RuntimeError(f"RuntimeError: {e}")
         return False
 
 @shared_task
@@ -39,4 +41,17 @@ def trim_audio_task(file_path):
        export_audio(trimmed_audio, file_path, sr)
        return True
     except Exception as e:
+        raise RuntimeError(f"RuntimeError: {e}")
+        return False
+    
+@shared_task
+def resample_audio_task(file_path, sr):
+    """Celery task to resample the audio asynchronously"""
+    try:
+         audio, org_sr = read_audio(file_path)
+         resampled_audio, sr = resample(audio, org_sr, eval(sr))
+         export_audio(resampled_audio, file_path, sr)
+         return True
+    except Exception as e:
+        raise RuntimeError(f"RuntimeError: {e}")
         return False

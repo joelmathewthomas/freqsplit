@@ -7,6 +7,7 @@ from .utils import get_audio_file_path
 from .tasks import save_and_classify
 from .tasks import normalize_audio_task
 from .tasks import trim_audio_task
+from .tasks import resample_audio_task
 from freqsplit.input.format_checker import is_supported_format
 
 UPLOAD_DIR = "/tmp/freqsplit"
@@ -82,4 +83,24 @@ def trim_audio(request):
     if task.get():
         return Response({"message": "Audio trimmed successfully"}, status=status.HTTP_200_OK)
     else:
-        return Response({"error": "Failed to normalize audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"error": "Failed to trim audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Endpoint to resample audio
+@api_view(['POST'])
+def resample_audio(request):
+    """Handles the resampling of audio"""
+    stat, result, status_code = get_audio_file_path(request, UPLOAD_DIR)
+    if stat == False:
+        return Response({"error": result}, status=status_code)
+    
+    sr = request.data.get("sr")
+    if not sr:
+        return Response({"error": "Missing sr"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Call Celery task synchronously
+    task = resample_audio_task.apply(args=(result, sr))
+
+    if task.get():
+        return Response({"message": f"Audio resampled to {sr} successfully"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "Failed to resample audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
