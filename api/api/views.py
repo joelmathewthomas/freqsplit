@@ -27,7 +27,7 @@ def upload_audio(request):
     
     # Check file format before proceeding
     if not is_supported_format(audio_file.name):
-        return Response({"error": "Unsupported file format"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Unsupported file format"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     # Generate a unique ID for this upload
     file_uuid = str(uuid.uuid4())[:8]
@@ -56,17 +56,12 @@ def upload_audio(request):
 @api_view(['POST'])
 def normalize_audio(request):
     """Handles audio normalization request"""
-    file_uuid = request.data.get("file_uuid")
-    
-    if not file_uuid:
-        return Response({"error": "Missing file_uuid"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    file_path = get_audio_file_path(file_uuid, UPLOAD_DIR)
-    if file_path == False:
-        return Response({"error": "No files found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    stat, result, status_code = get_audio_file_path(request, UPLOAD_DIR)
+    if stat == False:
+        return Response({"error": result}, status=status_code)
     
     # Call Celery task synchronously
-    task = normalize_audio_task.apply(args=(file_path,))
+    task = normalize_audio_task.apply(args=(result,))
     
     if task.get():
         return Response({"message": "Audio normalized successfully"}, status=status.HTTP_200_OK)
@@ -77,19 +72,14 @@ def normalize_audio(request):
 @api_view(['POST'])
 def trim_audio(request):
     """Handles trimming of leading and trailing silence from an audio clip"""
-    file_uuid = request.data.get("file_uuid")
-    
-    if not file_uuid:
-        return Response({"error": "Missing file_uuid"}, status=status.HTTP_400_BAD_REQUEST)
-
-    file_path = get_audio_file_path(file_uuid, UPLOAD_DIR)
-    if file_path == False:
-        return Response({"error": "No files found"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    stat, result, status_code = get_audio_file_path(request, UPLOAD_DIR)
+    if stat == False:
+        return Response({"error": result}, status=status_code)
     
     # Call Celery task synchronously
-    task = trim_audio_task.apply(args=(file_path,)) 
+    task = trim_audio_task.apply(args=(result,)) 
 
     if task.get():
-        return Response({"message": "Audio trimmed successfulyl"}, status=status.HTTP_200_OK)
+        return Response({"message": "Audio trimmed successfully"}, status=status.HTTP_200_OK)
     else:
         return Response({"error": "Failed to normalize audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
