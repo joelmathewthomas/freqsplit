@@ -1,10 +1,10 @@
 import os
+import uuid
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from freqsplit.preprocessing.classify import classify_audio
 
-UPLOAD_DIR = "/tmp/freq-split-enhance"
+UPLOAD_DIR = "/tmp/freqsplit"
 
 # Ensure the temp directory exists
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -16,19 +16,26 @@ def upload_audio(request):
         return Response({"Error: No file provided"}, status=status.HTTP_400_BAD_REQUEST)
     
     audio_file = request.FILES['file']
-    file_path = os.path.join(UPLOAD_DIR, audio_file.name)
+    
+    # Generate a unique ID for this upload
+    session_id = str(uuid.uuid4())[:8]
+    
+    #Create a subdirectory for this upload
+    session_dir = os.path.join(UPLOAD_DIR, session_id)
+    os.makedirs(session_dir, exist_ok=True)
+    
+    file_path = os.path.join(session_dir, audio_file.name)
     
     # Save the uploaded file
     with open(file_path, 'wb') as destination:
         for chunk in audio_file.chunks():
             destination.write(chunk)
 
-    audio_class = classify_audio(file_path)
-            
     return Response(
         {
             "Status": "File uploaded successfully",
+            "session_id": session_id,
             "file_path": file_path,
-            "audio_class": audio_class
-            }, status=status.HTTP_201_CREATED,
+            }, 
+        status=status.HTTP_201_CREATED,
         )
