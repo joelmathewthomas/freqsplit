@@ -9,4 +9,4 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-logging.info("freq-split-enhance/preprocessing package has been imported.")
+logging.info("freqsplit/preprocessing package has been imported.")

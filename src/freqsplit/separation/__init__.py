@@ -9,4 +9,4 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-logging.info("freq-split-enhance/separation package has been imported.")
+logging.info("freqsplit/separation package has been imported.")
