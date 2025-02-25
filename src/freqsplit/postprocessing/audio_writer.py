@@ -13,7 +13,7 @@ def export_audio(audio, output_path, sr):
 
     try:
         
-        print(f"Initial audio shape: {audio.shape}, dtype: {audio.dtype}")
+        print(f"Initial audio shape: {audio.shape}, dtype: {audio.dtype}, max: {np.max(audio)}, min: {np.min(audio)}")
 
         if audio.ndim == 2 and audio.shape[0] == 2:
             # Transpose stereo audio to match the expected shape
