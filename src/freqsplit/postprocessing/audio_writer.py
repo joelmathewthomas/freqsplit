@@ -12,9 +12,6 @@ def export_audio(audio, output_path, sr):
     """
 
     try:
-        
-        print(f"Initial audio shape: {audio.shape}, dtype: {audio.dtype}, max: {np.max(audio)}, min: {np.min(audio)}")
-
         if audio.ndim == 2 and audio.shape[0] == 2:
             # Transpose stereo audio to match the expected shape
             audio = audio.T  # From (2, num_samples) to (num_samples, 2)
@@ -26,10 +23,6 @@ def export_audio(audio, output_path, sr):
         if np.max(np.abs(audio)) > 0:  # Avoid divide by zero
             audio = audio / np.max(np.abs(audio))
 
-        # Verify final format
-        print(f"Final audio shape: {audio.shape}, dtype: {audio.dtype}, max: {np.max(audio)}, min: {np.min(audio)}")
-
-        
         sf.write(output_path, audio, sr, format='wav')
         print(f"Audio saved to {output_path}")
     except Exception as e:

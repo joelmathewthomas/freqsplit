@@ -2,6 +2,7 @@ from celery import shared_task
 from freqsplit.input.file_reader import read_audio
 from freqsplit.preprocessing.classify import classify_audio
 from freqsplit.preprocessing.normalize import normalize_audio
+from freqsplit.preprocessing.trim import trim_audio 
 from freqsplit.postprocessing.audio_writer import export_audio
 
 @shared_task
@@ -28,4 +29,14 @@ def normalize_audio_task(file_path):
         return True
     except Exception as e:
         return False
-        
+
+@shared_task
+def trim_audio_task(file_path):
+    """Celery task to trim audio synchronously"""
+    try:
+       audio, sr = read_audio(file_path)
+       trimmed_audio = trim_audio(audio, sr)
+       export_audio(trimmed_audio, file_path, sr)
+       return True
+    except Exception as e:
+        return False
