@@ -3,6 +3,7 @@ import uuid
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from .tasks import save_uploaded_file
 
 UPLOAD_DIR = "/tmp/freqsplit"
 
@@ -18,24 +19,21 @@ def upload_audio(request):
     audio_file = request.FILES['file']
     
     # Generate a unique ID for this upload
-    session_id = str(uuid.uuid4())[:8]
+    file_uuid = str(uuid.uuid4())[:8]
     
     #Create a subdirectory for this upload
-    session_dir = os.path.join(UPLOAD_DIR, session_id)
-    os.makedirs(session_dir, exist_ok=True)
+    upload_dir = os.path.join(UPLOAD_DIR, file_uuid)
+    os.makedirs(upload_dir, exist_ok=True)
     
-    file_path = os.path.join(session_dir, audio_file.name)
+    file_path = os.path.join(upload_dir, audio_file.name)
     
     # Save the uploaded file
-    with open(file_path, 'wb') as destination:
-        for chunk in audio_file.chunks():
-            destination.write(chunk)
+    save_uploaded_file.delay(file_path, audio_file.read())
 
     return Response(
         {
             "Status": "File uploaded successfully",
-            "session_id": session_id,
-            "file_path": file_path,
+            "file_uuid": file_uuid,
             }, 
         status=status.HTTP_201_CREATED,
         )
