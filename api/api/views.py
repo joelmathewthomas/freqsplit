@@ -3,7 +3,7 @@ import uuid
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .tasks import save_uploaded_file
+from .tasks import save_and_classify
 
 UPLOAD_DIR = "/tmp/freqsplit"
 
@@ -28,12 +28,15 @@ def upload_audio(request):
     file_path = os.path.join(upload_dir, audio_file.name)
     
     # Save the uploaded file
-    save_uploaded_file.delay(file_path, audio_file.read())
-
-    return Response(
-        {
-            "Status": "File uploaded successfully",
-            "file_uuid": file_uuid,
-            }, 
-        status=status.HTTP_201_CREATED,
-        )
+    task = save_and_classify.apply(args=(file_path, audio_file.read()))
+    
+    if task.successful():
+        audio_class = task.result
+        return Response(
+            {
+                "Status": "File uploaded successfully",
+                "file_uuid": file_uuid,
+                "audio_class": audio_class
+                }, 
+            status=status.HTTP_201_CREATED,
+            )
