@@ -9,6 +9,8 @@ from freqsplit.preprocessing.trim import trim_audio
 from freqsplit.preprocessing.resample import resample
 from freqsplit.postprocessing.audio_writer import export_audio
 from freqsplit.separation.demucs_wrapper import separate_audio_with_demucs
+from freqsplit.refinement.deepfilternet_wrapper import noisereduce
+
 
 @shared_task
 def save_and_classify(file_path, file_content):
@@ -18,7 +20,7 @@ def save_and_classify(file_path, file_content):
         
     # Read the saved audio file
     _, org_sr = read_audio(file_path) # Get original sampling rate
-    waveform, sr = read_audio(file_path, 16000, mono=True)
+    waveform, sr = read_audio(file_path, 32000, mono=True)
     
     # Classify the audio
     audio_class = classify_audio(waveform, sr)
@@ -112,3 +114,15 @@ def music_separation_task(file_path):
     
     return False 
    
+@shared_task
+def noisereduce_task(file_path):
+    """Celery task to remov noise from audio"""
+    file_path = Path(file_path)
+    
+    # Run noisereduction
+    try:
+        noisereduce(file_path, file_path)
+        return True
+    except Exception as e:
+        raise RuntimeError(f"Noise removal from audio failed")
+        return False
