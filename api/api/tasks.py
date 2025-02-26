@@ -18,7 +18,7 @@ def save_and_classify(file_path, file_content):
     # Classify the audio
     audio_class = classify_audio(waveform, sr)
     
-    return audio_class
+    return audio_class, sr
 
 @shared_task
 def normalize_audio_task(file_path):

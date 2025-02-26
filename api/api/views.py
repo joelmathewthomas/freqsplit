@@ -43,12 +43,13 @@ def upload_audio(request):
     task = save_and_classify.apply(args=(file_path, audio_file.read()))
     
     if task.successful():
-        audio_class = task.result
+        audio_class = task.result[0]
         return Response(
             {
                 "Status": "File uploaded successfully",
                 "file_uuid": file_uuid,
-                "audio_class": audio_class
+                "audio_class": audio_class,
+                "sr": task.result[1]
                 }, 
             status=status.HTTP_201_CREATED,
             )
