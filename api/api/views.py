@@ -8,6 +8,7 @@ from .tasks import save_and_classify
 from .tasks import normalize_audio_task
 from .tasks import trim_audio_task
 from .tasks import resample_audio_task
+from .tasks import music_separation_task
 from freqsplit.input.format_checker import is_supported_format
 
 UPLOAD_DIR = "/tmp/freqsplit"
@@ -105,3 +106,19 @@ def resample_audio(request):
         return Response({"message": f"Audio resampled to {sr} successfully"}, status=status.HTTP_200_OK)
     else:
         return Response({"error": "Failed to resample audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Endpoint to separate music into sources
+@api_view(['POST'])
+def separate_music(request):
+    """Handles the separatioo of music audio into source components"""
+    stat, result, status_code = get_audio_file_path(request, UPLOAD_DIR)
+    if stat == False:
+        return Response({"error": result}, status=status_code)  
+
+    # Call Celery task synchronously
+    task = music_separation_task.apply(args=(result,))
+
+    if task.get():
+        return Response({"message": f"Audio separated into sources successfully"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "Failed to source separate audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
