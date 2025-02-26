@@ -8,7 +8,7 @@ An evolving **audio processing pipeline** designed to separate and enhance audio
 
 - **Audio Input Handling**: Uses librosa for reading and handling audio files.
 - **Preprocessing**: Includes resampling, normalization, and trimming using librosa.
-- **Audio Classification**: Utilizes Google's YAMNet model to classify audio content.
+- **Audio Classification**: Utilizes panns-interference model trained on Google's Audioset to classify audio content.
 - **Source Separation**: Implements Demucs for music source separation.
 - **Noise Reduction**: Enhances audio by removing background noise using DeepFilterNet.
 - **Post-Processing**: Uses librosa to save processed audio files.
