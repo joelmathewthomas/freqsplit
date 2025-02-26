@@ -13,12 +13,13 @@ def save_and_classify(file_path, file_content):
         destination.write(file_content)
         
     # Read the saved audio file
+    _, org_sr = read_audio(file_path) # Get original sampling rate
     waveform, sr = read_audio(file_path, 16000, mono=True)
     
     # Classify the audio
     audio_class = classify_audio(waveform, sr)
     
-    return audio_class, sr
+    return audio_class, org_sr
 
 @shared_task
 def normalize_audio_task(file_path):
