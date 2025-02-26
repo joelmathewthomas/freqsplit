@@ -120,3 +120,15 @@ def noisereduce_task(file_path):
         return True
     except Exception as e:
         return False
+
+@shared_task
+def cleanup_task(file_path):
+    """Celery task to cleanup files"""
+    file_path = Path(file_path)
+    
+    # Cleanup
+    try:
+        shutil.rmtree(os.path.dirname(file_path))
+        return True
+    except Exception as e:
+        return False

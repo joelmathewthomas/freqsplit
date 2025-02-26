@@ -12,6 +12,7 @@ from .tasks import trim_audio_task
 from .tasks import resample_audio_task
 from .tasks import music_separation_task
 from .tasks import noisereduce_task
+from .tasks import cleanup_task
 from freqsplit.input.format_checker import is_supported_format
 
 UPLOAD_DIR = "/tmp/freqsplit"
@@ -181,3 +182,18 @@ def download_audio(request):
 
     # Stream the ZIP file
     return FileResponse(open(zip_file_path, "rb"), as_attachment=True, filename=os.path.basename(zip_file_path))
+
+@api_view(['POST'])
+def cleanup(request):
+    """Handles file cleanup after pipeline processing"""
+    stat, result, status_code = get_audio_file_path(request, UPLOAD_DIR)
+    if stat == False:
+        return Response({"error": result}, status=status_code)  
+
+    # Call Celery task synchronously
+    task = cleanup_task.apply(args=(result,))
+
+    if task.get():
+        return Response({"message": f"Successfully cleaned up files on the server"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"error": "Failed to cleanup files on the server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
