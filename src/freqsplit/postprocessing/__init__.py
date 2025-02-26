@@ -9,4 +9,4 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-logging.info("freq-split-enhance/postprocessing package has been imported.")
+logging.info("freqsplit/postprocessing package has been imported.")

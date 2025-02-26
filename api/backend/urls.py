@@ -17,8 +17,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from api.views import upload_audio
+from api.views import normalize_audio
+from api.views import trim_audio
+from api.views import resample_audio
+from api.views import separate_music
+from api.views import noisereduce
+from api.views import download_audio
+from api.views import cleanup
+from api.views import cleanup_zip
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/upload', upload_audio, name='upload_audio')
+    path('api/upload', upload_audio, name='upload_audio'),
+    path('api/normalize', normalize_audio, name="normalize_audio"),
+    path('api/trim', trim_audio, name='trim_audio'),
+    path('api/resample', resample_audio, name='resample_audio'),
+    path('api/separate', separate_music, name="separate_music"),
+    path('api/noisereduce', noisereduce, name="noisreduce"),
+    path('api/download', download_audio, name="download_audio"),
+    path('api/cleanup', cleanup, name="cleanup"),
+    path('api/cleanup_zip', cleanup_zip, name="cleanup_zip")
 ]

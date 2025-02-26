@@ -9,4 +9,4 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-logging.info("freq-split-enhance/refinement package has been imported.")
+logging.info("freqsplit/refinement package has been imported.")

@@ -9,4 +9,4 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-logging.info("freq-split-enhance/input package has been imported.")
+logging.info("freqsplit/input package has been imported.")
