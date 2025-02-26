@@ -1,5 +1,7 @@
 import os
 import uuid
+import zipfile
+from django.http import FileResponse, HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -139,3 +141,39 @@ def noisereduce(request):
         return Response({"message": f"Removed noise from audio successfully"}, status=status.HTTP_200_OK)
     else:
         return Response({"error": "Failed to remove noise from audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# Endpoint to download audio file or zipped directory
+@api_view(['GET'])
+def download_audio(request):
+    """Handles downloading audio file or a zipped directory"""
+    file_uuid = request.query_params.get("file_uuid")
+    
+    if not file_uuid:
+        return Response({"error": "file_uuid is required"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    dir_path = os.path.join(UPLOAD_DIR, file_uuid)
+    
+    if not os.path.exists(dir_path) or not os.listdir(dir_path):
+        return False, "No file found", status.HTTP_500_INTERNAL_SERVER_ERROR
+    file_path = os.path.join(dir_path, os.listdir(dir_path)[0])
+
+    base_dir = os.path.dirname(file_path)
+    
+    files_in_base_dir = os.listdir(base_dir)
+    audio_files = [f for f in files_in_base_dir if f.endswith(('.wav', '.mp3', '.flac',))]
+    sources_folder = "sources" in files_in_base_dir
+    
+    if len(audio_files) == 1 and not sources_folder:
+        return FileResponse(open(file_path, "rb"), as_attachment=True, filename=os.path.basename(file_path))
+    elif len(audio_files) >= 1 and sources_folder:
+        zip_file_path = f"{base_dir}.zip"
+        with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            for root, _, files in os.walk(base_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, base_dir)
+                    zipf.write(file_path, arcname)
+                    
+        return FileResponse(open(zip_file_path, "rb"), as_attachment=True, filename=os.path.basename(zip_file_path))
+    return Response({"error": "Unexpected file structure"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    

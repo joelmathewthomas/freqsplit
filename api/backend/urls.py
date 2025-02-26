@@ -22,6 +22,7 @@ from api.views import trim_audio
 from api.views import resample_audio
 from api.views import separate_music
 from api.views import noisereduce
+from api.views import download_audio
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +31,6 @@ urlpatterns = [
     path('api/trim', trim_audio, name='trim_audio'),
     path('api/resample', resample_audio, name='resample_audio'),
     path('api/separate', separate_music, name="separate_music"),
-    path('api/noisereduce', noisereduce, name="noisreduce")
+    path('api/noisereduce', noisereduce, name="noisreduce"),
+    path('api/download', download_audio, name="download_audio")
 ]
