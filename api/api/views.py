@@ -145,7 +145,7 @@ def noisereduce(request):
 # Endpoint to download audio file or zipped directory
 @api_view(['GET'])
 def download_audio(request):
-    """Handles downloading audio file or a zipped directory"""
+    """Handles downloading an audio file or a zipped directory."""
     file_uuid = request.query_params.get("file_uuid")
     
     if not file_uuid:
@@ -154,26 +154,30 @@ def download_audio(request):
     dir_path = os.path.join(UPLOAD_DIR, file_uuid)
     
     if not os.path.exists(dir_path) or not os.listdir(dir_path):
-        return False, "No file found", status.HTTP_500_INTERNAL_SERVER_ERROR
-    file_path = os.path.join(dir_path, os.listdir(dir_path)[0])
+        return Response({"error": "No file found"}, status=status.HTTP_404_NOT_FOUND)
 
-    base_dir = os.path.dirname(file_path)
-    
-    files_in_base_dir = os.listdir(base_dir)
-    audio_files = [f for f in files_in_base_dir if f.endswith(('.wav', '.mp3', '.flac',))]
-    sources_folder = "sources" in files_in_base_dir
-    
+    audio_files = [f for f in os.listdir(dir_path) if f.endswith(('.wav', '.mp3', '.flac'))]
+    sources_folder = "sources" in os.listdir(dir_path)
+
+    # If only one audio file exists (no sources/)
     if len(audio_files) == 1 and not sources_folder:
+        file_path = os.path.join(dir_path, audio_files[0])
         return FileResponse(open(file_path, "rb"), as_attachment=True, filename=os.path.basename(file_path))
-    elif len(audio_files) >= 1 and sources_folder:
-        zip_file_path = f"{base_dir}.zip"
-        with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for root, _, files in os.walk(base_dir):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    arcname = os.path.relpath(file_path, base_dir)
-                    zipf.write(file_path, arcname)
-                    
-        return FileResponse(open(zip_file_path, "rb"), as_attachment=True, filename=os.path.basename(zip_file_path))
-    return Response({"error": "Unexpected file structure"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    # If there are multiple audio files or a sources/ directory, create a ZIP
+    zip_file_path = os.path.join(UPLOAD_DIR, f"{file_uuid}.zip")
     
+    # Ensure ZIP file is always fresh
+    if os.path.exists(zip_file_path):
+        os.remove(zip_file_path)
+
+    # Create ZIP file
+    with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for root, _, files in os.walk(dir_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, dir_path)  # Preserve folder structure inside ZIP
+                zipf.write(file_path, arcname)
+
+    # Stream the ZIP file
+    return FileResponse(open(zip_file_path, "rb"), as_attachment=True, filename=os.path.basename(zip_file_path))
