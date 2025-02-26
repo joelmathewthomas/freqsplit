@@ -36,7 +36,6 @@ def normalize_audio_task(file_path):
         export_audio(normalized_audio, file_path, sr) # Save file
         return True
     except Exception as e:
-        raise RuntimeError(f"RuntimeError: {e}")
         return False
 
 @shared_task
@@ -48,7 +47,6 @@ def trim_audio_task(file_path):
        export_audio(trimmed_audio, file_path, sr)
        return True
     except Exception as e:
-        raise RuntimeError(f"RuntimeError: {e}")
         return False
     
 @shared_task
@@ -60,7 +58,6 @@ def resample_audio_task(file_path, sr):
          export_audio(resampled_audio, file_path, sr)
          return True
     except Exception as e:
-        raise RuntimeError(f"RuntimeError: {e}")
         return False
 
 @shared_task
@@ -110,13 +107,11 @@ def music_separation_task(file_path):
         return True
     
     except Exception as e:
-        raise RuntimeError(f"Music source separation task failed: {e}")
-    
-    return False 
+        return False 
    
 @shared_task
 def noisereduce_task(file_path):
-    """Celery task to remov noise from audio"""
+    """Celery task to remove noise from audio"""
     file_path = Path(file_path)
     
     # Run noisereduction
@@ -124,5 +119,4 @@ def noisereduce_task(file_path):
         noisereduce(file_path, file_path)
         return True
     except Exception as e:
-        raise RuntimeError(f"Noise removal from audio failed")
         return False
