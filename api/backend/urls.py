@@ -24,6 +24,7 @@ from api.views import separate_music
 from api.views import noisereduce
 from api.views import download_audio
 from api.views import cleanup
+from api.views import cleanup_zip
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,5 +36,5 @@ urlpatterns = [
     path('api/noisereduce', noisereduce, name="noisreduce"),
     path('api/download', download_audio, name="download_audio"),
     path('api/cleanup', cleanup, name="cleanup"),
-    
+    path('api/cleanup_zip', cleanup_zip, name="cleanup_zip")
 ]
