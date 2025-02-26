@@ -201,12 +201,18 @@ def cleanup(request):
 @api_view(['POST'])
 def cleanup_zip(request):
     """Handles cleanup of all zip files leftover by api/download"""
-    # Delete all ZIP files in UPLOAD_DIR
+    deleted_files = []
+    
     for file in os.listdir(UPLOAD_DIR):
         if file.endswith(".zip"):
             file_path = os.path.join(UPLOAD_DIR, file)
             try:
                 os.remove(file_path)
-                return Response({"message": "Cleaned up zipfiles on the server"}, status=status.HTTP_200_OK)
+                deleted_files.append(file)
             except Exception as e:
                 return Response({"message": f"Error deleting {file_path}: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if deleted_files:
+        return Response({"message": f"Deleted ZIP files: {deleted_files}"}, status=status.HTTP_200_OK)
+    else:
+        return Response({"message": "No ZIP files found to clean up."}, status=status.HTTP_200_OK)
