@@ -17,6 +17,7 @@ import UploadPage from './Pages/UploadPage';
 import PreviewPage from './Pages/PreviewPage';
 import ProcessingPage from './Pages/ProcessingPage';
 import ResultsPage from './Pages/ResultsPage';
+import AudioVisualizer from './components/AudioVisualizer';
 
 // Custom Link component for AppBar
 const App: React.FC = () => {
@@ -39,6 +40,7 @@ const App: React.FC = () => {
             <Route path="/processing" element={<ProcessingPage />} />
             <Route path="/results" element={<ResultsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path='/audio' element={<AudioVisualizer/>}/>
           </Routes>
         </Router>
       </MediaProvider>
