@@ -108,6 +108,7 @@ function UploadPage() {
             onChange={handleFileChange}
             accept="audio/*,video/*"
           />
+          
           <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
           <Typography variant="h6" gutterBottom>
             {file ? file.name : 'Drop your file here or click to browse'}
@@ -135,6 +136,7 @@ function UploadPage() {
           </Button>
         </Box>
       </Paper>
+      
     </Container>
   );
 }
