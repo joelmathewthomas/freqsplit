@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { 
   Typography, 
   Container, 
@@ -22,9 +23,45 @@ import { useMediaContext } from '../contexts/MediaContext';
 function ResultsPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mediaFile, clearMedia } = useMediaContext();
+  const { mediaFile, clearMedia,response } = useMediaContext();
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
+
+  const processDownload = async() => {
+    try {
+      console.log('download started..')
+      const res = await axios.get("http://127.0.0.1:8000/api/download", {
+        params: { file_uuid: response.file_uuid }, // Attach file_uuid as a query param
+        responseType: "blob", // Treat response as a file
+      });
+  
+      if (res.status === 200) {
+        const blob = new Blob([res.data]);
+        const url = window.URL.createObjectURL(blob);
+  
+        // Extract filename from headers or use default
+        const contentDisposition = res.headers["content-disposition"];
+        const filename = contentDisposition
+          ? contentDisposition.split("filename=")[1]
+          : "downloaded_file";
+  
+        // Auto-download the file (no user interaction needed)
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+  
+        // Cleanup
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } else {
+        console.error("Download failed, server responded with:", res);
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+    }
+  };
   
   useEffect(() => {
     if (!mediaFile) {
@@ -152,7 +189,7 @@ function ResultsPage() {
                     color="primary"
                     fullWidth
                     sx={{ mb: 1 }}
-                    onClick={() => alert('Downloading file...')}
+                    onClick={() => processDownload()}
                   >
                     Download
                   </Button>
