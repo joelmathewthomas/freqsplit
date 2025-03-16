@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
-import {
-  Typography,
-  Container,
-  Paper,
-  Box,
-  LinearProgress,
-} from "@mui/material";
+import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
@@ -18,25 +12,27 @@ function ProcessingPage() {
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState<
-    "success" | "error" | "warning" | "info"
-  >("info");
+  const [severity, setSeverity] = useState("info");
 
-  const showToast = (
-    msg: string,
-    type: "success" | "error" | "warning" | "info"
-  ) => {
+  const showToast = (msg, type) => {
     setMessage(msg);
     setSeverity(type);
     setOpen(true);
   };
 
-  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const processStep = async (url: string, nextStep: () => void, progressValue: number) => {
+  const processStep = async (url, nextStep, progressValue, extraData = null) => {
     try {
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
+      
+      if (extraData) {
+        for (const key in extraData) {
+          formData.append(key, extraData[key]);
+        }
+      }
+
       const startTime = Date.now();
       const res = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -68,9 +64,14 @@ function ProcessingPage() {
     processStep("http://127.0.0.1:8000/api/normalize", () => {
       processStep("http://127.0.0.1:8000/api/trim", () => {
         if (response.audio_class === "Music") {
-          processStep("http://127.0.0.1:8000/api/resample", () => {
-            processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100);
-          }, 75);
+          processStep(
+            "http://127.0.0.1:8000/api/resample",
+            () => {
+              processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100);
+            },
+            75,
+            { sr: response.sr?.toString() || "44100" }
+          );
         } else {
           processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100);
         }
