@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Snackbar, Alert } from "@mui/material";
-import {
-  Typography,
-  Container,
-  Paper,
-  Box,
-  LinearProgress,
-} from "@mui/material";
+import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
@@ -16,21 +9,7 @@ function ProcessingPage() {
   const navigate = useNavigate();
   const { mediaFile, response } = useMediaContext();
   const [progress, setProgress] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState<
-    "success" | "error" | "warning" | "info"
-  >("info");
   const [statusText, setStatusText] = useState("Analyzing media...");
-
-  const showToast = (
-    msg: string,
-    type: "success" | "error" | "warning" | "info"
-  ) => {
-    setMessage(msg);
-    setSeverity(type);
-    setOpen(true);
-  };
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -47,17 +26,13 @@ function ProcessingPage() {
       });
 
       if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
         const elapsedTime = Date.now() - startTime;
         if (elapsedTime < 5000) await delay(5000 - elapsedTime);
         setProgress(progressValue);
         nextStep();
-      } else {
-        showToast(`Step failed: ${url}`, "error");
       }
     } catch (error) {
       console.error(`Error in step: ${url}`, error);
-      showToast(`Error processing: ${url}`, "error");
     }
   };
 
@@ -116,20 +91,6 @@ function ProcessingPage() {
             {statusText}
           </Typography>
         </Box>
-        <Snackbar
-          open={open}
-          autoHideDuration={1000}
-          onClose={() => setOpen(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setOpen(false)}
-            severity={severity}
-            sx={{ width: "100%" }}
-          >
-            {message}
-          </Alert>
-        </Snackbar>
       </Paper>
     </Container>
   );
