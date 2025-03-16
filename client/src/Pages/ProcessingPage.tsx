@@ -1,13 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Snackbar, Alert, Button } from "@mui/material";
-import {
-  Typography,
-  Container,
-  Paper,
-  Box,
-  LinearProgress,
-} from "@mui/material";
+import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
@@ -16,169 +9,59 @@ function ProcessingPage() {
   const navigate = useNavigate();
   const { mediaFile, response } = useMediaContext();
   const [progress, setProgress] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState<
-    "success" | "error" | "warning" | "info"
-  >("info");
-  const showToast = (
-    msg: string,
-    type: "success" | "error" | "warning" | "info"
-  ) => {
-    setMessage(msg);
-    setSeverity(type);
-    setOpen(true);
-  };
-  const processNormalize = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post("http://127.0.0.1:8000/api/normalize", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-        processTrim();
-      } else {
-        showToast("Audio Normalization failed", "error");
-      }
-    } catch (error) {
-      console.error("Normalization failed:", error);
-    }
-  };
-  const processTrim = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/trim",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-        if (response.audio_class === "Music") {
-          processResampling();
-        }else{
-          processNoiseReduce()
-        }
-      } else {
-        showToast("Audio Trimming failed", "error");
-      }
-    } catch (error) {
-      console.error("Trimming failed:", error);
-      return;
-    }
-  };
-  const processResampling = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      formData.append("sr", String(response.sr));
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/resample",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-        processSeparate()
-        
-      } else {
-        showToast("Audio Resampling failed", "error");
-      }
-    } catch (error) {
-      console.error("Resampling failed:", error);
-    }
-  };
+  const [statusText, setStatusText] = useState("Analyzing media...");
 
-  const processNoiseReduce = async () => {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const processStep = async (url: string, nextStep: () => void, progressValue: number, status: string, extraData = {}) => {
     try {
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/noisereduce",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
+      Object.entries(extraData).forEach(([key, value]) => formData.append(key, value));
+
+      setStatusText(status);
+      const startTime = Date.now();
+      const res = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-      } else {
-        showToast("Audio NoiseRemoval failed", "error");
+        const elapsedTime = Date.now() - startTime;
+        if (elapsedTime < 5000) await delay(5000 - elapsedTime);
+        setProgress(progressValue);
+        nextStep();
       }
     } catch (error) {
-      console.error("NoiseRemoval failed:", error);
+      console.error(`Error in step: ${url}`, error);
     }
   };
-  const processSeparate = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/separate",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast("Audio separated successfully", "success");
-      } else {
-        showToast("Audio separation failed", "error");
-      }
-    } catch (error) {
-      console.error("Separation failed:", error);
-    }
-  };
-  
-  
 
   useEffect(() => {
     if (!mediaFile) {
       navigate("/upload");
       return;
     }
-    console.log("Normalizing....");
-    processNormalize();
-    
-    
 
-    // Simulate processing progress
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => {
-        const newProgress = prevProgress + 10;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => navigate("/results"), 500);
-          return 100;
+    console.log("Starting processing...");
+
+    processStep("http://127.0.0.1:8000/api/normalize", () => {
+      processStep("http://127.0.0.1:8000/api/trim", () => {
+        if (response.audio_class === "Music") {
+          processStep("http://127.0.0.1:8000/api/resample", () => {
+            processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100, "Separating sources into vocals, bass, drums and other...");
+          }, 75, "Resampling audio to 44100Hz...", { sr: response.sr?.toString() || "44100" });
+        } else {
+          processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
         }
-        return newProgress;
-      });
-    }, 800);
-
-    return () => clearInterval(interval);
+      }, 50, "Trimming silent parts from the audio...");
+    }, 25, "Normalizing audio frequency...");
   }, [mediaFile, navigate]);
+
+  useEffect(() => {
+    if (progress === 100) {
+      navigate("/results");
+    }
+  }, [progress]);
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -205,29 +88,9 @@ function ProcessingPage() {
 
         <Box sx={{ mt: 6 }}>
           <Typography variant="body1" color="textSecondary">
-            {progress < 30
-              ? "Analyzing media..."
-              : progress < 60
-              ? "Applying processing..."
-              : progress < 90
-              ? "Finalizing..."
-              : "Almost done..."}
+            {statusText}
           </Typography>
         </Box>
-        <Snackbar
-          open={open}
-          autoHideDuration={1000}
-          onClose={() => setOpen(false)}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        >
-          <Alert
-            onClose={() => setOpen(false)}
-            severity={severity}
-            sx={{ width: "100%" }}
-          >
-            {message}
-          </Alert>
-        </Snackbar>
       </Paper>
     </Container>
   );
