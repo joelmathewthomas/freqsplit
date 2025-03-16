@@ -211,7 +211,7 @@ function ResultsPage() {
           <Button
             variant="outlined"
             color="primary"
-            onClick={handleProcessAnother}
+            onClick={()=> navigate('/upload')}
           >
             Process Another File
           </Button>
