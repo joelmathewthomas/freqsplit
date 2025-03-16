@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Snackbar, Alert } from "@mui/material";
-import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
+import {
+  Typography,
+  Container,
+  Paper,
+  Box,
+  LinearProgress,
+} from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
@@ -12,27 +18,29 @@ function ProcessingPage() {
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [severity, setSeverity] = useState("info");
+  const [severity, setSeverity] = useState<
+    "success" | "error" | "warning" | "info"
+  >("info");
+  const [statusText, setStatusText] = useState("Analyzing media...");
 
-  const showToast = (msg, type) => {
+  const showToast = (
+    msg: string,
+    type: "success" | "error" | "warning" | "info"
+  ) => {
     setMessage(msg);
     setSeverity(type);
     setOpen(true);
   };
 
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const processStep = async (url, nextStep, progressValue, extraData = null) => {
+  const processStep = async (url: string, nextStep: () => void, progressValue: number, status: string, extraData = {}) => {
     try {
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
-      
-      if (extraData) {
-        for (const key in extraData) {
-          formData.append(key, extraData[key]);
-        }
-      }
+      Object.entries(extraData).forEach(([key, value]) => formData.append(key, value));
 
+      setStatusText(status);
       const startTime = Date.now();
       const res = await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -64,19 +72,14 @@ function ProcessingPage() {
     processStep("http://127.0.0.1:8000/api/normalize", () => {
       processStep("http://127.0.0.1:8000/api/trim", () => {
         if (response.audio_class === "Music") {
-          processStep(
-            "http://127.0.0.1:8000/api/resample",
-            () => {
-              processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100);
-            },
-            75,
-            { sr: response.sr?.toString() || "44100" }
-          );
+          processStep("http://127.0.0.1:8000/api/resample", () => {
+            processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100, "Separating sources into vocals, bass, drums and other...");
+          }, 75, "Resampling audio to 44100Hz...", { sr: response.sr?.toString() || "44100" });
         } else {
-          processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100);
+          processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
         }
-      }, 50);
-    }, 25);
+      }, 50, "Trimming silent parts from the audio...");
+    }, 25, "Normalizing audio frequency...");
   }, [mediaFile, navigate]);
 
   useEffect(() => {
@@ -110,13 +113,7 @@ function ProcessingPage() {
 
         <Box sx={{ mt: 6 }}>
           <Typography variant="body1" color="textSecondary">
-            {progress < 30
-              ? "Analyzing media..."
-              : progress < 60
-              ? "Applying processing..."
-              : progress < 90
-              ? "Finalizing..."
-              : "Almost done..."}
+            {statusText}
           </Typography>
         </Box>
         <Snackbar
