@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Snackbar, Alert, Button } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import {
   Typography,
   Container,
@@ -41,6 +41,7 @@ function ProcessingPage() {
       console.log("response from server:", res);
       if (res.status === 200 && res.data) {
         showToast(res.data.message, "success");
+        setProgress(25)
         processTrim();
       } else {
         showToast("Audio Normalization failed", "error");
@@ -66,8 +67,10 @@ function ProcessingPage() {
       if (res.status === 200 && res.data) {
         showToast(res.data.message, "success");
         if (response.audio_class === "Music") {
+          setProgress(50)
           processResampling();
         }else{
+          setProgress(75)
           processNoiseReduce()
         }
       } else {
@@ -95,6 +98,7 @@ function ProcessingPage() {
       console.log("response from server:", res);
       if (res.status === 200 && res.data) {
         showToast(res.data.message, "success");
+        setProgress(75)
         processSeparate()
         
       } else {
@@ -121,6 +125,9 @@ function ProcessingPage() {
       console.log("response from server:", res);
       if (res.status === 200 && res.data) {
         showToast(res.data.message, "success");
+        setTimeout(()=>{
+          setProgress(100)
+        },5000)
       } else {
         showToast("Audio NoiseRemoval failed", "error");
       }
@@ -143,6 +150,7 @@ function ProcessingPage() {
       );
       console.log("response from server:", res);
       if (res.status === 200 && res.data) {
+        setProgress(100)
         showToast("Audio separated successfully", "success");
       } else {
         showToast("Audio separation failed", "error");
@@ -162,23 +170,13 @@ function ProcessingPage() {
     console.log("Normalizing....");
     processNormalize();
     
-    
-
-    // Simulate processing progress
-    const interval = setInterval(() => {
-      setProgress((prevProgress) => {
-        const newProgress = prevProgress + 10;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => navigate("/results"), 500);
-          return 100;
-        }
-        return newProgress;
-      });
-    }, 800);
-
-    return () => clearInterval(interval);
   }, [mediaFile, navigate]);
+
+  useEffect(()=>{
+    if(progress == 100){
+      navigate('/results')
+    } 
+  },[progress])
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
