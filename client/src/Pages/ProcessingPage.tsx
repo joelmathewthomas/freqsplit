@@ -21,6 +21,7 @@ function ProcessingPage() {
   const [severity, setSeverity] = useState<
     "success" | "error" | "warning" | "info"
   >("info");
+
   const showToast = (
     msg: string,
     type: "success" | "error" | "warning" | "info"
@@ -29,154 +30,59 @@ function ProcessingPage() {
     setSeverity(type);
     setOpen(true);
   };
-  const processNormalize = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post("http://127.0.0.1:8000/api/normalize", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-        setProgress(25)
-        processTrim();
-      } else {
-        showToast("Audio Normalization failed", "error");
-      }
-    } catch (error) {
-      console.error("Normalization failed:", error);
-    }
-  };
-  const processTrim = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/trim",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-        if (response.audio_class === "Music") {
-          setProgress(50)
-          processResampling();
-        }else{
-          setProgress(75)
-          processNoiseReduce()
-        }
-      } else {
-        showToast("Audio Trimming failed", "error");
-      }
-    } catch (error) {
-      console.error("Trimming failed:", error);
-      return;
-    }
-  };
-  const processResampling = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      formData.append("sr", String(response.sr));
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/resample",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        showToast(res.data.message, "success");
-        setProgress(75)
-        processSeparate()
-        
-      } else {
-        showToast("Audio Resampling failed", "error");
-      }
-    } catch (error) {
-      console.error("Resampling failed:", error);
-    }
-  };
 
-  const processNoiseReduce = async () => {
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const processStep = async (url: string, nextStep: () => void, progressValue: number) => {
     try {
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/noisereduce",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
+      const startTime = Date.now();
+      const res = await axios.post(url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       if (res.status === 200 && res.data) {
         showToast(res.data.message, "success");
-        setTimeout(()=>{
-          setProgress(100)
-        },5000)
+        const elapsedTime = Date.now() - startTime;
+        if (elapsedTime < 5000) await delay(5000 - elapsedTime);
+        setProgress(progressValue);
+        nextStep();
       } else {
-        showToast("Audio NoiseRemoval failed", "error");
+        showToast(`Step failed: ${url}`, "error");
       }
     } catch (error) {
-      console.error("NoiseRemoval failed:", error);
+      console.error(`Error in step: ${url}`, error);
+      showToast(`Error processing: ${url}`, "error");
     }
   };
-  const processSeparate = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file_uuid", response.file_uuid);
-      const res = await axios.post(
-        "http://127.0.0.1:8000/api/separate",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("response from server:", res);
-      if (res.status === 200 && res.data) {
-        setProgress(100)
-        showToast("Audio separated successfully", "success");
-      } else {
-        showToast("Audio separation failed", "error");
-      }
-    } catch (error) {
-      console.error("Separation failed:", error);
-    }
-  };
-  
-  
 
   useEffect(() => {
     if (!mediaFile) {
       navigate("/upload");
       return;
     }
-    console.log("Normalizing....");
-    processNormalize();
-    
+
+    console.log("Starting processing...");
+
+    processStep("http://127.0.0.1:8000/api/normalize", () => {
+      processStep("http://127.0.0.1:8000/api/trim", () => {
+        if (response.audio_class === "Music") {
+          processStep("http://127.0.0.1:8000/api/resample", () => {
+            processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100);
+          }, 75);
+        } else {
+          processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100);
+        }
+      }, 50);
+    }, 25);
   }, [mediaFile, navigate]);
 
-  useEffect(()=>{
-    if(progress == 100){
-      navigate('/results')
-    } 
-  },[progress])
+  useEffect(() => {
+    if (progress === 100) {
+      navigate("/results");
+    }
+  }, [progress]);
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
