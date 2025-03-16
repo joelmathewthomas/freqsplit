@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Stepper, Step, StepLabel } from '@mui/material';
 
-const steps = ['Upload', 'Preview', 'Process', 'Results'];
+const steps = ['Upload', 'Preview', 'Process', ,'Results'];
 
 function StepperComponent({ activeStep }) {
   return (
