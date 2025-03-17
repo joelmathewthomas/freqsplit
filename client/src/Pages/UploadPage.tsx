@@ -20,7 +20,7 @@ import { useMediaContext } from "../contexts/MediaContext";
 function UploadPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { setMediaFile, setResponse, response } = useMediaContext(); // ✅ Correct function name
+  const { setMediaFile, setResponse, response } = useMediaContext();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState("");
@@ -70,8 +70,8 @@ function UploadPage() {
         name: file.name,
         url: URL.createObjectURL(file),
         type: file.type,
-      }); // ✅ Corrected function call
-      navigate('/preview', { state: { audioClass: response.audio_class } });
+      }); //
+      navigate('/preview');
     } else {
       setFileError("Please upload a file to continue.");
     }
@@ -84,7 +84,7 @@ function UploadPage() {
     }
   
     const formData = new FormData();
-    formData.append("file", file); // ✅ No more errors because we checked `file` is not null.
+    formData.append("file", file);
   
     try {
       const res = await axios.post<{
@@ -123,9 +123,6 @@ function UploadPage() {
         <Typography variant="h4" gutterBottom color="primary">
           Upload Your Media
         </Typography>
-        <Typography variant="body1" paragraph color="textSecondary">
-          Drag and drop your audio or video file, or click to browse
-        </Typography>
 
         <Box
           sx={{
@@ -157,7 +154,7 @@ function UploadPage() {
           
           <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
           <Typography variant="h6" gutterBottom>
-            {file ? file.name : "Drop your file here or click to browse"}
+            {file ? file.name : "Drop your file here or click to browse files"}
           </Typography>
           {file && (
             <Typography variant="body2" color="textSecondary">

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+//import axios from 'axios';
 import { 
   Typography, 
   Container, 
@@ -11,7 +11,6 @@ import {
   CardContent,
   Grid,
   LinearProgress,
-  useTheme 
 } from '@mui/material';
 import { 
   Check as CheckIcon,
@@ -22,12 +21,10 @@ import { useMediaContext } from '../contexts/MediaContext';
 
 function ResultsPage() {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const { mediaFile, clearMedia, response } = useMediaContext();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { mediaFile, response } = useMediaContext();
+//  const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
-  const location = useLocation();
-  const { audioClass } = location.state || {};
+  const audioClass = response.audio_class
   const isVideo = mediaFile?.type.includes('video');
   
   useEffect(() => {
@@ -36,16 +33,16 @@ function ResultsPage() {
     }
   }, [mediaFile, navigate]);
   
-  const togglePlay = (index) => {
-    if (audioRefs[index].current) {
-      if (isPlaying) {
-        audioRefs[index].current.pause();
-      } else {
-        audioRefs[index].current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
+//  const togglePlay = (index) => {
+//    if (audioRefs[index].current) {
+//      if (isPlaying) {
+//        audioRefs[index].current.pause();
+//      } else {
+//        audioRefs[index].current.play();
+//      }
+//      setIsPlaying(!isPlaying);
+//    }
+//  };
 
   if (!mediaFile) return <LinearProgress />;
   

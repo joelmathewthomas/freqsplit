@@ -28,7 +28,7 @@ const App: React.FC = () => {
         <Router>
           <AppBar position="static">
             <Toolbar>
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>Freq Split</Typography>
+              <Typography variant="h6" sx={{ flexGrow: 1 }}>FreqSplit</Typography>
               <Button color="inherit" href="/"> <HomeIcon sx={{ mr: 1 }} /> Home </Button>
             </Toolbar>
           </AppBar>
@@ -40,7 +40,7 @@ const App: React.FC = () => {
             <Route path="/processing" element={<ProcessingPage />} />
             <Route path="/results" element={<ResultsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path='/audio' element={<AudioVisualizer/>}/>
+            <Route path='/audio' element={<AudioVisualizer />}/>
           </Routes>
         </Router>
       </MediaProvider>
