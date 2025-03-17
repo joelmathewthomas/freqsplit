@@ -97,6 +97,12 @@ function ProcessingPage() {
           </Typography>
         </Box>
       </Paper>
+    <LinearProgress
+      variant="query"
+      sx={{
+        height: 2,
+      }}
+    />
     </Container>
   );
 }

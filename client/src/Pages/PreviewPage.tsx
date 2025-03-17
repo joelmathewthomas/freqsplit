@@ -118,7 +118,12 @@ function PreviewPage() {
           </Button>
         </Box>
       </Paper>
-      <LinearProgress />
+      <LinearProgress
+        variant="query"
+        sx={{
+          height: 2,
+        }}
+      />
     </Container>
   );
 }
