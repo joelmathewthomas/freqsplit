@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { 
   Typography, 
   Container, 
@@ -20,7 +21,8 @@ function PreviewPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState(false);
   const videoRef = useRef(null);
-  
+  const location = useLocation();
+  const { audioClass } = location.state || {}
   // Supported video formats
   const supportedFormats = ['video/mp4', 'video/webm', 'video/ogg'];
   const isVideo = mediaFile && supportedFormats.includes(mediaFile.type);
@@ -46,6 +48,7 @@ function PreviewPage() {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
+      <p>Audio Classification: {audioClass || "No data received"}</p>
       <StepperComponent activeStep={1} />
       
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
@@ -129,7 +132,7 @@ function PreviewPage() {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/processing')}
+            onClick={() =>  navigate('/processing', { state: { audioClass}})}
           >
             Process Media
           </Button>

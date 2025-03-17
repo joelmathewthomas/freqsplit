@@ -71,7 +71,7 @@ function UploadPage() {
         url: URL.createObjectURL(file),
         type: file.type,
       }); // ✅ Corrected function call
-      navigate("/preview");
+      navigate('/preview', { state: { audioClass: response.audio_class } });
     } else {
       setFileError("Please upload a file to continue.");
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Typography, 
@@ -23,45 +23,12 @@ import { useMediaContext } from '../contexts/MediaContext';
 function ResultsPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mediaFile, clearMedia,response } = useMediaContext();
+  const { mediaFile, clearMedia, response } = useMediaContext();
   const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
-
-  const processDownload = async() => {
-    try {
-      console.log('download started..')
-      const res = await axios.get("http://127.0.0.1:8000/api/download", {
-        params: { file_uuid: response.file_uuid }, // Attach file_uuid as a query param
-        responseType: "blob", // Treat response as a file
-      });
-  
-      if (res.status === 200) {
-        const blob = new Blob([res.data]);
-        const url = window.URL.createObjectURL(blob);
-  
-        // Extract filename from headers or use default
-        const contentDisposition = res.headers["content-disposition"];
-        const filename = contentDisposition
-          ? contentDisposition.split("filename=")[1]
-          : "downloaded_file";
-  
-        // Auto-download the file (no user interaction needed)
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", filename);
-        document.body.appendChild(link);
-        link.click();
-  
-        // Cleanup
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      } else {
-        console.error("Download failed, server responded with:", res);
-      }
-    } catch (error) {
-      console.error("Download error:", error);
-    }
-  };
+  const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
+  const location = useLocation();
+  const { audioClass } = location.state || {};
+  const isVideo = mediaFile?.type.includes('video');
   
   useEffect(() => {
     if (!mediaFile) {
@@ -69,25 +36,18 @@ function ResultsPage() {
     }
   }, [mediaFile, navigate]);
   
-  const togglePlay = () => {
-    if (videoRef.current) {
+  const togglePlay = (index) => {
+    if (audioRefs[index].current) {
       if (isPlaying) {
-        videoRef.current.pause();
+        audioRefs[index].current.pause();
       } else {
-        videoRef.current.play();
+        audioRefs[index].current.play();
       }
       setIsPlaying(!isPlaying);
     }
   };
 
-  const handleProcessAnother = () => {
-    clearMedia();
-    navigate('/upload');
-  };
-  
   if (!mediaFile) return <LinearProgress />;
-  
-  const isVideo = mediaFile.type.includes('video');
   
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -107,50 +67,38 @@ function ResultsPage() {
         
         <Box sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
           {isVideo ? (
-            <Box
-              sx={{
-                position: 'relative',
-                width: '100%',
-                maxWidth: '100%',
-                borderRadius: 2,
-                overflow: 'hidden',
-                bgcolor: 'black',
-              }}
-            >
-              <video
-                ref={videoRef}
-                src={mediaFile.url}
-                style={{ width: '100%', borderRadius: 8 }}
-                controls
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-              />
-            </Box>
+            <video
+              src={mediaFile.url}
+              style={{ width: '100%', borderRadius: 8 }}
+              controls
+            />
           ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                p: 4,
-                bgcolor: 'rgba(0, 0, 0, 0.04)',
-                borderRadius: 2,
-              }}
-            >
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
               <VolumeUpIcon color="primary" sx={{ fontSize: 80, mb: 2 }} />
               <Typography variant="h6" gutterBottom>
                 {mediaFile.name} (Processed)
               </Typography>
-              <Box sx={{ width: '100%', mt: 2 }}>
-                <audio
-                  ref={videoRef}
-                  src={mediaFile.url}
-                  style={{ width: '100%' }}
-                  controls
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                />
-              </Box>
+              {audioClass === "Music" ? (
+                audioRefs.map((ref, index) => (
+                  <Box key={index} sx={{ width: '100%', mt: 2 }}>
+                    <audio
+                      ref={ref}
+                      src={mediaFile.url}
+                      style={{ width: '100%' }}
+                      controls
+                    />
+                  </Box>
+                ))
+              ) : (
+                <Box sx={{ width: '100%', mt: 2 }}>
+                  <audio
+                    ref={audioRefs[0]}
+                    src={mediaFile.url}
+                    style={{ width: '100%' }}
+                    controls
+                  />
+                </Box>
+              )}
             </Box>
           )}
         </Box>
@@ -168,58 +116,16 @@ function ResultsPage() {
                 <Typography variant="body2" color="textSecondary">
                   <strong>Type:</strong> {mediaFile.type}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  <strong>Size:</strong> {(mediaFile.size / (1024 * 1024)).toFixed(2)} MB
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Actions
-                </Typography>
-                <Typography variant="body2" paragraph color="textSecondary">
-                  Download or share your processed media
-                </Typography>
-                <Box sx={{ mt: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{ mb: 1 }}
-                    onClick={() => processDownload()}
-                  >
-                    Download
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    fullWidth
-                    onClick={() => alert('Sharing file...')}
-                  >
-                    Share
-                  </Button>
-                </Box>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
         
         <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={()=> navigate('/upload')}
-          >
+          <Button variant="outlined" color="primary" onClick={() => navigate('/upload')}>
             Process Another File
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate('/')}
-          >
+          <Button variant="contained" color="primary" onClick={() => navigate('/')}> 
             Back to Home
           </Button>
         </Box>

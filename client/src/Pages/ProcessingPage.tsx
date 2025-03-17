@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
 import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
@@ -35,6 +35,8 @@ function ProcessingPage() {
       console.error(`Error in step: ${url}`, error);
     }
   };
+  const location = useLocation();
+  const { audioClass } = location.state || {}; 
 
   useEffect(() => {
     if (!mediaFile) {
@@ -59,7 +61,9 @@ function ProcessingPage() {
 
   useEffect(() => {
     if (progress === 100) {
-      navigate("/results");
+    
+      navigate('/results', { state: { audioClass}})
+      
     }
   }, [progress]);
 
