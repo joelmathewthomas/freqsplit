@@ -47,14 +47,14 @@ function ProcessingPage() {
 
     console.log("Starting processing...");
 
-    processStep("http://127.0.0.1:8000/api/normalize", () => {
-      processStep("http://127.0.0.1:8000/api/trim", () => {
+    processStep("/api/normalize", () => {
+      processStep("/api/trim", () => {
         if (response.audio_class === "Music") {
-          processStep("http://127.0.0.1:8000/api/resample", () => {
-            processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100, "Separating sources into vocals, bass, drums and other...");
+          processStep("/api/resample", () => {
+            processStep("/api/separate", () => setProgress(100), 100, "Separating sources into vocals, bass, drums and other...");
           }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
-          processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
+          processStep("/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
         }
       }, 50, "Trimming silent parts from the audio...");
     }, 25, "Normalizing audio frequency...");

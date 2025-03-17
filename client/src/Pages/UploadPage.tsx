@@ -91,7 +91,7 @@ function UploadPage() {
         file_uuid: string;
         sr: number;
         audio_class: string;
-      }>("http://127.0.0.1:8000/api/upload", formData, {
+      }>("/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
