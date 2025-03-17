@@ -32,7 +32,6 @@ function PreviewPage() {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <p>Audio Classification: {audioClass || "No data received"}</p>
       <StepperComponent activeStep={1} />
       
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
@@ -92,6 +91,7 @@ function PreviewPage() {
                   controls
                 />
               </Box>
+              <p>Audio Classification: {audioClass || "No data received"}</p>
             </Box>
           ) : (
             <Typography color="error" sx={{ mt: 2 }}>

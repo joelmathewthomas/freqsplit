@@ -51,7 +51,7 @@ function ProcessingPage() {
       processStep("/api/trim", () => {
         if (response.audio_class === "Music") {
           processStep("/api/resample", () => {
-            processStep("/api/separate", () => setProgress(100), 100, "Separating sources into vocals, bass, drums and other...");
+            processStep("/api/separate", () => setProgress(100), 100, "Separating music into vocals, bass, drums and other...");
           }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
           processStep("/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
