@@ -9,4 +9,4 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-logging.info("freqsplit/spectogram package has been imported.")
+logging.info("freqsplit/spectrogram package has been imported.")

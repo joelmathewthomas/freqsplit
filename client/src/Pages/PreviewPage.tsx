@@ -11,6 +11,8 @@ import {
 import { VolumeUp as VolumeUpIcon, ErrorOutline as ErrorIcon } from '@mui/icons-material';
 import StepperComponent from '../components/StepperComponent';
 import { useMediaContext } from '../contexts/MediaContext';
+// @ts-ignore
+import SpectrogramPlayer from "react-audio-spectrogram-player"
 
 function PreviewPage() {
   const navigate = useNavigate();
@@ -83,12 +85,15 @@ function PreviewPage() {
               <Typography variant="h6" gutterBottom>
                 {mediaFile.name}
               </Typography>
-              <Box sx={{ width: '100%', mt: 2 }}>
-                <audio
-                  ref={videoRef}
+              <Box sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2}}>
+                <SpectrogramPlayer
                   src={mediaFile.url}
-                  style={{ width: '100%' }}
-                  controls
+                  sxx={JSON.parse(response.spectrogram)}
+                  SampleRate={response.spec_sr}
+                  colormap={'magma'}
+                  settings={true}
+                  transparent={false}
+                  navigator={true}
                 />
               </Box>
               <p>Audio Classification: {audioClass || "No data received"}</p>

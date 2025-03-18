@@ -8,7 +8,7 @@ import JSZip from "jszip";
 
 function ProcessingPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL } = useMediaContext();
+  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL, setDownloadedFileSpectrogram } = useMediaContext();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Analyzing media...");
 
@@ -73,7 +73,36 @@ function ProcessingPage() {
         const fileURL = URL.createObjectURL(blob);
 
         setDownloadedFileURL( fileURL  );
-        setProgress(100);
+        setProgress(90);
+
+        // Get spectrogram
+        setProgress(95);
+        setStatusText("Calculating Spectrogram");
+
+        const formData = new FormData();
+        formData.append("file_uuid", response.file_uuid);
+        if (mediaFile?.name) {
+          formData.append("file_name", mediaFile?.name);
+        }
+
+        const startTime = Date.now();
+        const resp = await axios.post<{
+          Status: String;
+          spectrogram: string;
+          spec_sr: number;
+        }>("/api/spectrogram", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        })
+
+        if (resp.status === 200 && resp.data) {
+          const elapsedTime = Date.now() - startTime;
+          if(elapsedTime < 5000) await delay(5000 - elapsedTime);
+          setDownloadedFileSpectrogram({spectrogram: resp.data.spectrogram, spec_sr: resp.data.spec_sr})
+          setProgress(100);
+        }
+
 
       } else {
         console.log("Failed to download the file");
@@ -94,9 +123,32 @@ function ProcessingPage() {
       if (!fileData.dir) {
         const fileBlob = await fileData.async("blob");
         const fileURL = URL.createObjectURL(fileBlob);
-        fileURLs.push({ name: filename, url: fileURL });
+        
+        // Get spectrograms
+        setProgress(95);
+        setStatusText("Calculating Spectrograms");
+
+        const formData = new FormData();
+        formData.append("file_uuid", response.file_uuid);
+        formData.append("file_name", filename);
+
+        const res = await axios.post<{
+          Status: string;
+          spectrogram: string;
+          spec_sr: number;
+        }>("/api/spectrogram", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+
+        if (res.status === 200 && res.data){
+
+        }
+        fileURLs.push({ name: filename, url: fileURL, spectrogram: res.data.spectrogram, spec_sr: res.data.spec_sr });
       }
     }
+    console.log(fileURLs)
     setExtractedFiles(fileURLs);
     setProgress(100);
   };

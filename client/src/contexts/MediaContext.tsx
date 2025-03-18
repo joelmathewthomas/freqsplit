@@ -3,12 +3,14 @@ import React, { createContext, useState, useContext } from 'react';
 interface MediaContextType {
   mediaFile: { name: string; url: string; type: string } | null;
   setMediaFile: (file: { name: string; url: string; type: string }) => void;
-  response: { file_uuid: string; sr: number; audio_class: string }; 
-  setResponse: (response: { file_uuid: string; sr: number; audio_class: string }) => void;
-  extractedFiles: { name: string; url: string }[];
-  setExtractedFiles: (files: {name: string; url: string }[]) => void;
+  response: { file_uuid: string; sr: number; audio_class: string, spectrogram: string, spec_sr: number }; 
+  setResponse: (response: { file_uuid: string; sr: number; audio_class: string, spectrogram: string, spec_sr: number }) => void;
+  extractedFiles: { name: string; url: string, spectrogram: string, spec_sr: number }[];
+  setExtractedFiles: (files: {name: string; url: string, spectrogram: string, spec_sr: number}[]) => void;
   downloadedFileURL:  string;
   setDownloadedFileURL: ( file: string) => void;
+  downloadedFileSpectrogram: { spectrogram: string, spec_sr: number};
+  setDownloadedFileSpectrogram: (spectrogram: {spectrogram: string, spec_sr: number}) => void;
 }
 
 
@@ -20,13 +22,19 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audio_class: "",
     file_uuid: "",
     sr: 0,
+    spectrogram: "",
+    spec_sr: 0
   });
   const [extractedFiles, setExtractedFiles] = useState<MediaContextType["extractedFiles"]>([]);
   const [downloadedFileURL, setDownloadedFileURL] = useState<MediaContextType["downloadedFileURL"]>("");
+  const [downloadedFileSpectrogram, setDownloadedFileSpectrogram] = useState<MediaContextType["downloadedFileSpectrogram"]>({
+    spectrogram: "",
+    spec_sr: 0
+  });
   
 
   return (
-    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL }}>
+    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL, downloadedFileSpectrogram, setDownloadedFileSpectrogram }}>
       {children}
     </MediaContext.Provider>
   );

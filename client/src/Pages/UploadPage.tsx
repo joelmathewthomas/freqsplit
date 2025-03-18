@@ -91,6 +91,8 @@ function UploadPage() {
         file_uuid: string;
         sr: number;
         audio_class: string;
+        spectrogram: string;
+        spec_sr: number;
       }>("/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -104,6 +106,8 @@ function UploadPage() {
           audio_class: res.data.audio_class,
           file_uuid: res.data.file_uuid,
           sr: res.data.sr,
+          spectrogram: res.data.spectrogram,
+          spec_sr: res.data.spec_sr
         }));
         setUpload(true);
       }

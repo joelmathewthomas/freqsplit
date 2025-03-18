@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 //import axios from 'axios';
 import { 
@@ -18,14 +18,14 @@ import {
 } from '@mui/icons-material';
 import StepperComponent from '../components/StepperComponent';
 import { useMediaContext } from '../contexts/MediaContext';
+// @ts-ignore
+import SpectrogramPlayer from "react-audio-spectrogram-player"
 
 function ResultsPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, extractedFiles, downloadedFileURL } = useMediaContext();
+  const { mediaFile, response, extractedFiles, downloadedFileURL, downloadedFileSpectrogram } = useMediaContext();
   console.log("Extracted files are", extractedFiles);
 //  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
-  const mediaFileRef = useRef(null);
   const audioClass = response.audio_class
   const isVideo = mediaFile?.type.includes('video');
 
@@ -97,15 +97,18 @@ function ResultsPage() {
               <Typography variant="h6" gutterBottom>
                 {mediaFile.name} (Original)
               </Typography>
-              <Box sx={{ width: '100%', mt: 2, mb: 2 }}>
+              <Box sx={{ width: '100%', mt: 2, mb: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                   {mediaFile.name}
                 </Typography>
-                <audio
-                  ref={mediaFileRef}
+                <SpectrogramPlayer
                   src={mediaFile.url}
-                  style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                  controls
+                  sxx={JSON.parse(response.spectrogram)}
+                  SampleRate={response.spec_sr}
+                  colormap={'magma'}
+                  settings={true}
+                  transparent={false}
+                  navigator={true}
                 />
               </Box>
               {audioClass === "Music" ? (
@@ -116,15 +119,18 @@ function ResultsPage() {
                   </Typography>
                 </Box>
                 {extractedFiles.map((file, index) => (
-                  <Box key={index} sx={{ width: '100%', mt: 2 }}>
+                  <Box key={index} sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                       {file.name}
                     </Typography>
-                    <audio
-                      ref={audioRefs[index]}
+                    <SpectrogramPlayer
                       src={file.url}
-                      style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                      controls
+                      sxx={JSON.parse(file.spectrogram)}
+                      SampleRate={file.spec_sr}
+                      colormap={'magma'}
+                      settings={true}
+                      transparent={false}
+                      navigator={true}
                     />
                   </Box>
                 ))}
@@ -136,15 +142,18 @@ function ResultsPage() {
                       Processed File
                     </Typography>
                   </Box>
-                  <Box sx={{ width: '100%', mt: 2 }}>
+                  <Box sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                         {mediaFile?.name}
                       </Typography>
-                    <audio
-                      ref={audioRefs[0]}
+                      <SpectrogramPlayer
                       src={downloadedFileURL}
-                      style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                      controls
+                      sxx={JSON.parse(downloadedFileSpectrogram.spectrogram)}
+                      SampleRate={downloadedFileSpectrogram.spec_sr}
+                      colormap={'magma'}
+                      settings={true}
+                      transparent={false}
+                      navigator={true}
                     />
                   </Box>
                 </>
