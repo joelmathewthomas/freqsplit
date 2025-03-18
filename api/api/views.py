@@ -47,17 +47,21 @@ def upload_audio(request):
     # Save the uploaded file
     task = save_and_classify.apply(args=(file_path, audio_file.read()))
     
-    if task.successful():
-        audio_class = task.result[0]
+    if task.ready() and task.successful():
+        result = task.result
         return Response(
             {
                 "Status": "File uploaded successfully",
                 "file_uuid": file_uuid,
-                "audio_class": audio_class,
-                "sr": task.result[1]
-                }, 
+                "audio_class": result[0],
+                "sr": result[1],
+                "spectrogram": result[2],
+                "spec_sr": result[3]
+            }, 
             status=status.HTTP_201_CREATED,
-            )
+        )
+    else:
+        return Response({"error": "Processing failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Endpoint to normalize audio
 @api_view(['POST'])

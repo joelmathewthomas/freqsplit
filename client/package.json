@@ -18,6 +18,7 @@
     "axios": "^1.8.3",
     "jszip": "^3.10.1",
     "react": "^18.2.0",
+    "react-audio-spectrogram-player": "^2.0.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.1"
   },

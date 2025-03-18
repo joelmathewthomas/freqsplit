@@ -1,5 +1,7 @@
 import os
 import shutil
+import json
+import numpy as np
 from pathlib import Path
 from celery import shared_task
 from freqsplit.input.file_reader import read_audio
@@ -10,6 +12,7 @@ from freqsplit.preprocessing.resample import resample
 from freqsplit.postprocessing.audio_writer import export_audio
 from freqsplit.separation.demucs_wrapper import separate_audio_with_demucs
 from freqsplit.refinement.deepfilternet_wrapper import noisereduce
+from freqsplit.spectrogram.generator import generate_spectrogram
 
 
 @shared_task
@@ -24,8 +27,14 @@ def save_and_classify(file_path, file_content):
     
     # Classify the audio
     audio_class = classify_audio(waveform, sr)
-    
-    return audio_class, org_sr
+
+    # Generate spectrogram
+    spec_db, plot_data = generate_spectrogram(file_path)
+    # Convert numpy array to JSON-safe list
+    spec_db = np.nan_to_num(spec_db, nan=-80.0, posinf=-80.0, neginf=-80.0)
+    spec_data_json = json.dumps(spec_db.tolist())
+
+    return audio_class, org_sr, spec_data_json, plot_data['sr']
 
 @shared_task
 def normalize_audio_task(file_path):
