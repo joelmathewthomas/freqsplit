@@ -8,7 +8,7 @@ import JSZip from "jszip";
 
 function ProcessingPage() {
   const navigate = useNavigate();
-  const { mediaFile, response } = useMediaContext();
+  const { mediaFile, response, setExtractedFiles } = useMediaContext();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Analyzing media...");
 
@@ -70,11 +70,10 @@ function ProcessingPage() {
       if (!fileData.dir) {
         const fileBlob = await fileData.async("blob");
         const fileURL = URL.createObjectURL(fileBlob);
-        fileURLs.push({ filename, fileURL });
+        fileURLs.push({ name: filename, url: fileURL });
       }
     }
-
-    fileURLs.forEach(({ filename, fileURL }) => console.log(`File: ${filename}, URL: ${fileURL}`));
+    setExtractedFiles(fileURLs);
     setProgress(100);
   };
 

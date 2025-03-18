@@ -21,7 +21,8 @@ import { useMediaContext } from '../contexts/MediaContext';
 
 function ResultsPage() {
   const navigate = useNavigate();
-  const { mediaFile, response } = useMediaContext();
+  const { mediaFile, response, extractedFiles } = useMediaContext();
+  console.log("Extracted files are", extractedFiles);
 //  const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
   const audioClass = response.audio_class
