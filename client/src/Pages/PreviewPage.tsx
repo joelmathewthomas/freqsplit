@@ -85,7 +85,7 @@ function PreviewPage() {
               <Typography variant="h6" gutterBottom>
                 {mediaFile.name}
               </Typography>
-              <Box sx={{ width: '100%', mt: 2 }}>
+              <Box sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2}}>
                 <SpectrogramPlayer
                   src={mediaFile.url}
                   sxx={JSON.parse(response.spectrogram)}

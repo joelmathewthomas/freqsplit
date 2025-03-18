@@ -97,7 +97,7 @@ function ResultsPage() {
               <Typography variant="h6" gutterBottom>
                 {mediaFile.name} (Original)
               </Typography>
-              <Box sx={{ width: '100%', mt: 2, mb: 2 }}>
+              <Box sx={{ width: '100%', mt: 2, mb: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                   {mediaFile.name}
                 </Typography>
@@ -119,7 +119,7 @@ function ResultsPage() {
                   </Typography>
                 </Box>
                 {extractedFiles.map((file, index) => (
-                  <Box key={index} sx={{ width: '100%', mt: 2 }}>
+                  <Box key={index} sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                       {file.name}
                     </Typography>
@@ -142,7 +142,7 @@ function ResultsPage() {
                       Processed File
                     </Typography>
                   </Box>
-                  <Box sx={{ width: '100%', mt: 2 }}>
+                  <Box sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                         {mediaFile?.name}
                       </Typography>
