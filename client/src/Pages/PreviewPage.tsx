@@ -90,6 +90,10 @@ function PreviewPage() {
                   src={mediaFile.url}
                   sxx={JSON.parse(response.spectrogram)}
                   SampleRate={response.spec_sr}
+                  colormap={'magma'}
+                  settings={true}
+                  transparent={false}
+                  navigator={true}
                 />
               </Box>
               <p>Audio Classification: {audioClass || "No data received"}</p>
