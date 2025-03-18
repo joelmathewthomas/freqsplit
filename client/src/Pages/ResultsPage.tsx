@@ -77,11 +77,14 @@ function ResultsPage() {
                 {mediaFile.name} (Processed)
               </Typography>
               {audioClass === "Music" ? (
-                audioRefs.map((ref, index) => (
+                extractedFiles.map((file, index) => (
                   <Box key={index} sx={{ width: '100%', mt: 2 }}>
+                    <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                      {file.name}
+                    </Typography>
                     <audio
-                      ref={ref}
-                      src={mediaFile.url}
+                      ref={audioRefs[index]}
+                      src={file.url}
                       style={{ width: '100%' }}
                       controls
                     />
