@@ -8,7 +8,7 @@ import JSZip from "jszip";
 
 function ProcessingPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, setExtractedFiles } = useMediaContext();
+  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL } = useMediaContext();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Analyzing media...");
 
@@ -40,7 +40,7 @@ function ProcessingPage() {
     }
   };
 
-  const fetchDownload = async () => {
+  const fetchZipDownload = async () => {
     try {
       setStatusText("Fetching Results...");
   
@@ -51,6 +51,30 @@ function ProcessingPage() {
       if (res.status === 200) {
         console.log("Download successful");
         await handleDownload(res.data);
+      } else {
+        console.log("Failed to download the file");
+      }
+    } catch (error) {
+      console.error("Error fetching download:", error);
+    }
+  };
+
+  const fetchDownload = async () => {
+    try {
+      setStatusText("Fetching Results...");
+  
+      const res = await axios.get(`/api/download?file_uuid=${response.file_uuid}`, {
+        responseType: "blob",
+      });
+  
+      if (res.status === 200) {
+        console.log("Download successful");
+        const blob = new Blob([res.data], { type: "audio/wav" });
+        const fileURL = URL.createObjectURL(blob);
+
+        setDownloadedFileURL( fileURL  );
+        setProgress(100);
+
       } else {
         console.log("Failed to download the file");
       }
@@ -89,10 +113,10 @@ function ProcessingPage() {
       processStep("/api/trim", () => {
         if (response.audio_class === "Music") {
           processStep("/api/resample", () => {
-            processStep("/api/separate", () => fetchDownload(), 90, "Separating music into vocals, bass, drums and other...");
+            processStep("/api/separate", () => fetchZipDownload(), 90, "Separating music into vocals, bass, drums and other...");
           }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
-          processStep("/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
+          processStep("/api/noisereduce", () => fetchDownload(), 90, "Reducing background noise from the audio...");
         }
       }, 50, "Trimming silent parts from the audio...");
     }, 25, "Normalizing audio frequency...");

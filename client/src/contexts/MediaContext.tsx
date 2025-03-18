@@ -7,6 +7,8 @@ interface MediaContextType {
   setResponse: (response: { file_uuid: string; sr: number; audio_class: string }) => void;
   extractedFiles: { name: string; url: string }[];
   setExtractedFiles: (files: {name: string; url: string }[]) => void;
+  downloadedFileURL:  string;
+  setDownloadedFileURL: ( file: string) => void;
 }
 
 
@@ -19,12 +21,12 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     file_uuid: "",
     sr: 0,
   });
-
   const [extractedFiles, setExtractedFiles] = useState<MediaContextType["extractedFiles"]>([]);
+  const [downloadedFileURL, setDownloadedFileURL] = useState<MediaContextType["downloadedFileURL"]>("");
   
 
   return (
-    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles }}>
+    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL }}>
       {children}
     </MediaContext.Provider>
   );

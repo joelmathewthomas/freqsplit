@@ -21,7 +21,7 @@ import { useMediaContext } from '../contexts/MediaContext';
 
 function ResultsPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, extractedFiles } = useMediaContext();
+  const { mediaFile, response, extractedFiles, downloadedFileURL } = useMediaContext();
   console.log("Extracted files are", extractedFiles);
 //  const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
@@ -104,9 +104,12 @@ function ResultsPage() {
                 ))
               ) : (
                 <Box sx={{ width: '100%', mt: 2 }}>
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                      {mediaFile?.name}
+                    </Typography>
                   <audio
                     ref={audioRefs[0]}
-                    src={mediaFile.url}
+                    src={downloadedFileURL}
                     style={{ width: '100%' }}
                     controls
                   />
