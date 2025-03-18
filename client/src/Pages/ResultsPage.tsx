@@ -25,6 +25,7 @@ function ResultsPage() {
   console.log("Extracted files are", extractedFiles);
 //  const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
+  const mediaFileRef = useRef(null);
   const audioClass = response.audio_class
   const isVideo = mediaFile?.type.includes('video');
   
@@ -71,11 +72,22 @@ function ResultsPage() {
               controls
             />
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
               <VolumeUpIcon color="primary" sx={{ fontSize: 80, mb: 2 }} />
               <Typography variant="h6" gutterBottom>
                 {mediaFile.name} (Processed)
               </Typography>
+              <Box sx={{ width: '100%', mt: 2, mb: 2 }}>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  Original: {mediaFile.name}
+                </Typography>
+                <audio
+                  ref={mediaFileRef}
+                  src={mediaFile.url}
+                  style={{ width: '100%' }}
+                  controls
+                />
+              </Box>
               {audioClass === "Music" ? (
                 extractedFiles.map((file, index) => (
                   <Box key={index} sx={{ width: '100%', mt: 2 }}>
