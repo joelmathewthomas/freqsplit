@@ -1,7 +1,7 @@
 import librosa
 import numpy as np
 
-def generate_spectogram(audio_file: str, spectogram_type: str = 'mel', sr: int = 22050):
+def generate_spectrogram(audio_file: str, spectrogram_type: str = 'mel', sr: int = 22050):
     """
     Generates a spectrogram array from an audio file.
 
@@ -19,16 +19,16 @@ def generate_spectogram(audio_file: str, spectogram_type: str = 'mel', sr: int =
     # Load the audio file
     waveform, sr = librosa.load(audio_file, sr=sr)
 
-    # Create the spectogram
-    if spectogram_type == 'mel':
+    # Create the spectrogram
+    if spectrogram_type == 'mel':
         spec = librosa.feature.melspectrogram(y=waveform, sr=sr)
         spec_db = librosa.power_to_db(spec, ref=np.max) # Convert to decibels
         plot_data = {'sr': sr, 'x_axis': 'time', 'y_axis': 'mel'}
-    elif spectogram_type == 'stft':
+    elif spectrogram_type == 'stft':
         spec = np.abs(librosa.stft(waveform))
         spec_db = librosa.amplitude_to_db(spec, ref=np.max)
         plot_data = {'sr': sr, 'x_axis': 'time', 'y_axis': 'log'}
     else:
-        raise ValueError(f"Unsupported spectogram type: {spectogram_type}")
+        raise ValueError(f"Unsupported spectrogram type: {spectrogram_type}")
 
     return spec_db, plot_data
