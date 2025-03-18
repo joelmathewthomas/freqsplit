@@ -12,6 +12,7 @@ from .tasks import trim_audio_task
 from .tasks import resample_audio_task
 from .tasks import music_separation_task
 from .tasks import noisereduce_task
+from .tasks import generate_spectrogram_task
 from .tasks import cleanup_task
 from freqsplit.input.format_checker import is_supported_format
 
@@ -147,6 +148,35 @@ def noisereduce(request):
     else:
         return Response({"error": "Failed to remove noise from audio"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# Endpoint to generate spectrograms
+@api_view(['POST'])
+def generate_spectrogram(request):
+    """Handle generation of spectrogram"""
+    file_uuid = request.data.get("file_uuid")
+    file_name = request.data.get("file_name")
+    file_path = os.path.join(UPLOAD_DIR, file_uuid, file_name)
+    
+    # Check if file exists
+    if os.path.exists(file_path):
+        # Call Celery task synchronously
+        task = generate_spectrogram_task.apply(args=(file_path,))
+
+        if task.ready() and task.successful():
+            result = task.result
+            if result[0]:
+                return Response(
+                    {
+                        "Status": "Spectrogram generated successfully",
+                        "spectrogram": result[1],
+                        "spec_sr": result[2]
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response({"error": "Failed to generate spectrogram"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({"error": "File Not Found"}, status=status.HTTP_404_NOT_FOUND)
+    
 # Endpoint to download audio file or zipped directory
 @api_view(['GET'])
 def download_audio(request):

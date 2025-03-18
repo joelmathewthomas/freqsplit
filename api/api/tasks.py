@@ -131,6 +131,20 @@ def noisereduce_task(file_path):
         return False
 
 @shared_task
+def generate_spectrogram_task(file_path):
+    """Celery task to generate spectrogram"""
+    try:
+        file_path = Path(file_path)
+    
+        # Generate spectrogram
+        spec_db, plot_data = generate_spectrogram(file_path)
+        spec_db = np.nan_to_num(spec_db, nan=-80.0, posinf=-80.0, neginf=-80.0)
+        spec_data_json = json.dumps(spec_db.tolist())
+
+        return True, spec_data_json, plot_data['sr'] 
+    except Exception as e:
+        return False
+@shared_task
 def cleanup_task(file_path):
     """Celery task to cleanup files"""
     file_path = Path(file_path)

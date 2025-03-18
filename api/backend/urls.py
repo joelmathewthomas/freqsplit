@@ -23,6 +23,7 @@ from api.views import resample_audio
 from api.views import separate_music
 from api.views import noisereduce
 from api.views import download_audio
+from api.views import generate_spectrogram
 from api.views import cleanup
 from api.views import cleanup_zip
 
@@ -35,6 +36,7 @@ urlpatterns = [
     path('api/separate', separate_music, name="separate_music"),
     path('api/noisereduce', noisereduce, name="noisreduce"),
     path('api/download', download_audio, name="download_audio"),
+    path('api/spectrogram', generate_spectrogram, name="generate_spectrogram"),
     path('api/cleanup', cleanup, name="cleanup"),
     path('api/cleanup_zip', cleanup_zip, name="cleanup_zip")
 ]
