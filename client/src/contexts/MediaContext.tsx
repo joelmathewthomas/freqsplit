@@ -5,8 +5,8 @@ interface MediaContextType {
   setMediaFile: (file: { name: string; url: string; type: string }) => void;
   response: { file_uuid: string; sr: number; audio_class: string, spectrogram: string, spec_sr: number }; 
   setResponse: (response: { file_uuid: string; sr: number; audio_class: string, spectrogram: string, spec_sr: number }) => void;
-  extractedFiles: { name: string; url: string }[];
-  setExtractedFiles: (files: {name: string; url: string }[]) => void;
+  extractedFiles: { name: string; url: string, spectrogram: string, spec_sr: number }[];
+  setExtractedFiles: (files: {name: string; url: string, spectrogram: string, spec_sr: number}[]) => void;
   downloadedFileURL:  string;
   setDownloadedFileURL: ( file: string) => void;
 }

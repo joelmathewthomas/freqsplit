@@ -94,9 +94,32 @@ function ProcessingPage() {
       if (!fileData.dir) {
         const fileBlob = await fileData.async("blob");
         const fileURL = URL.createObjectURL(fileBlob);
-        fileURLs.push({ name: filename, url: fileURL });
+        
+        // Get spectrograms
+        setProgress(95);
+        setStatusText("Calculating Spectrograms");
+
+        const formData = new FormData();
+        formData.append("file_uuid", response.file_uuid);
+        formData.append("file_name", filename);
+
+        const res = await axios.post<{
+          Status: string;
+          spectrogram: string;
+          spec_sr: number;
+        }>("/api/spectrogram", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+
+        if (res.status === 200 && res.data){
+
+        }
+        fileURLs.push({ name: filename, url: fileURL, spectrogram: res.data.spectrogram, spec_sr: res.data.spec_sr });
       }
     }
+    console.log(fileURLs)
     setExtractedFiles(fileURLs);
     setProgress(100);
   };
