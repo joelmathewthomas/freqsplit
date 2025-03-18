@@ -4,6 +4,7 @@ import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
+import JSZip from "jszip";
 
 function ProcessingPage() {
   const navigate = useNavigate();
@@ -39,6 +40,44 @@ function ProcessingPage() {
     }
   };
 
+  const fetchDownload = async () => {
+    try {
+      setStatusText("Fetching Results...");
+  
+      const res = await axios.get(`/api/download?file_uuid=${response.file_uuid}`, {
+        responseType: "blob",
+      });
+  
+      if (res.status === 200) {
+        console.log("Download successful");
+        await handleDownload(res.data);
+      } else {
+        console.log("Failed to download the file");
+      }
+    } catch (error) {
+      console.error("Error fetching download:", error);
+    }
+  };
+  
+
+  const handleDownload = async (downloadData: Blob) => {
+    const zipBlob = new Blob([downloadData], { type: "application/zip" });
+    const zip = await JSZip.loadAsync(zipBlob);
+
+    const fileURLs = [];
+
+    for (const [filename, fileData] of Object.entries(zip.files)) {
+      if (!fileData.dir) {
+        const fileBlob = await fileData.async("blob");
+        const fileURL = URL.createObjectURL(fileBlob);
+        fileURLs.push({ filename, fileURL });
+      }
+    }
+
+    fileURLs.forEach(({ filename, fileURL }) => console.log(`File: ${filename}, URL: ${fileURL}`));
+    setProgress(100);
+  };
+
   useEffect(() => {
     if (!mediaFile) {
       navigate("/upload");
@@ -51,7 +90,7 @@ function ProcessingPage() {
       processStep("/api/trim", () => {
         if (response.audio_class === "Music") {
           processStep("/api/resample", () => {
-            processStep("/api/separate", () => setProgress(100), 100, "Separating music into vocals, bass, drums and other...");
+            processStep("/api/separate", () => fetchDownload(), 90, "Separating music into vocals, bass, drums and other...");
           }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
           processStep("/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
