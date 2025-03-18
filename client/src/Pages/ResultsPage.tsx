@@ -28,6 +28,26 @@ function ResultsPage() {
   const mediaFileRef = useRef(null);
   const audioClass = response.audio_class
   const isVideo = mediaFile?.type.includes('video');
+
+  const handleDownloadAll = () => {
+    if (audioClass === 'Music') {
+      extractedFiles.forEach(({ name, url }) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    } else {
+      const link = document.createElement('a');
+      link.href = downloadedFileURL;
+      link.download = mediaFile?.name ?? 'downloaded_file';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
   
   useEffect(() => {
     if (!mediaFile) {
@@ -163,7 +183,7 @@ function ResultsPage() {
           <Button variant="outlined" color="primary" onClick={() => navigate('/upload')}>
             Process Another File
           </Button>
-          <Button variant="contained" color="primary" onClick={() => navigate('/')}>Download All Files</Button>
+          <Button variant="contained" color="primary" onClick={handleDownloadAll}>Download All Files</Button>
         </Box>
       </Paper>
     </Container>
