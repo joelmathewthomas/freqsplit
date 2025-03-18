@@ -18,6 +18,8 @@ import {
 } from '@mui/icons-material';
 import StepperComponent from '../components/StepperComponent';
 import { useMediaContext } from '../contexts/MediaContext';
+// @ts-ignore
+import SpectrogramPlayer from "react-audio-spectrogram-player"
 
 function ResultsPage() {
   const navigate = useNavigate();
@@ -25,7 +27,6 @@ function ResultsPage() {
   console.log("Extracted files are", extractedFiles);
 //  const [isPlaying, setIsPlaying] = useState(false);
   const audioRefs = [useRef(null), useRef(null), useRef(null),useRef(null)];
-  const mediaFileRef = useRef(null);
   const audioClass = response.audio_class
   const isVideo = mediaFile?.type.includes('video');
 
@@ -101,11 +102,14 @@ function ResultsPage() {
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                   {mediaFile.name}
                 </Typography>
-                <audio
-                  ref={mediaFileRef}
+                <SpectrogramPlayer
                   src={mediaFile.url}
-                  style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                  controls
+                  sxx={JSON.parse(response.spectrogram)}
+                  SampleRate={response.spec_sr}
+                  colormap={'magma'}
+                  settings={true}
+                  transparent={false}
+                  navigator={true}
                 />
               </Box>
               {audioClass === "Music" ? (
@@ -120,11 +124,14 @@ function ResultsPage() {
                     <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                       {file.name}
                     </Typography>
-                    <audio
-                      ref={audioRefs[index]}
+                    <SpectrogramPlayer
                       src={file.url}
-                      style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                      controls
+                      sxx={JSON.parse(file.spectrogram)}
+                      SampleRate={file.spec_sr}
+                      colormap={'magma'}
+                      settings={true}
+                      transparent={false}
+                      navigator={true}
                     />
                   </Box>
                 ))}
