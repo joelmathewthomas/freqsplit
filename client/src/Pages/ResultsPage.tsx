@@ -151,14 +151,22 @@ function ResultsPage() {
           </Grid>
         </Grid>
         
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between' }}>
+        <Box
+          sx={{
+            mt: 4,
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: 2, // Adds spacing between buttons
+            flexWrap: 'wrap', // Ensures better behavior on smaller screens
+          }}
+        >
           <Button variant="outlined" color="primary" onClick={() => navigate('/upload')}>
             Process Another File
           </Button>
-          <Button variant="contained" color="primary" onClick={() => navigate('/')}> 
+          <Button variant="contained" color="primary" onClick={() => navigate('/')}>
             Back to Home
           </Button>
-        </Box>
+      </Box>
       </Paper>
     </Container>
   );
