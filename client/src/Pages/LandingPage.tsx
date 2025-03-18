@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Typography, 
@@ -43,7 +42,7 @@ function LandingPage() {
           }}
         >
           <Typography variant="h3" gutterBottom color="primary">
-            Welcome to Freq Split
+            Welcome to FreqSplit
           </Typography>
           <Typography variant="h5" paragraph color="textSecondary">
             Upload, preview, and process your audio and video files with ease

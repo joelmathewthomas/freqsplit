@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
@@ -17,7 +17,10 @@ function ProcessingPage() {
     try {
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
-      Object.entries(extraData).forEach(([key, value]) => formData.append(key, value));
+      Object.entries(extraData).forEach(([key, value]) => 
+        formData.append(key, String(value))
+      );
+      
 
       setStatusText(status);
       const startTime = Date.now();
@@ -44,14 +47,14 @@ function ProcessingPage() {
 
     console.log("Starting processing...");
 
-    processStep("http://127.0.0.1:8000/api/normalize", () => {
-      processStep("http://127.0.0.1:8000/api/trim", () => {
+    processStep("/api/normalize", () => {
+      processStep("/api/trim", () => {
         if (response.audio_class === "Music") {
-          processStep("http://127.0.0.1:8000/api/resample", () => {
-            processStep("http://127.0.0.1:8000/api/separate", () => setProgress(100), 100, "Separating sources into vocals, bass, drums and other...");
-          }, 75, "Resampling audio to 44100Hz...", { sr: response.sr?.toString() || "44100" });
+          processStep("/api/resample", () => {
+            processStep("/api/separate", () => setProgress(100), 100, "Separating music into vocals, bass, drums and other...");
+          }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
-          processStep("http://127.0.0.1:8000/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
+          processStep("/api/noisereduce", () => setProgress(100), 100, "Reducing background noise from the audio...");
         }
       }, 50, "Trimming silent parts from the audio...");
     }, 25, "Normalizing audio frequency...");
@@ -59,7 +62,9 @@ function ProcessingPage() {
 
   useEffect(() => {
     if (progress === 100) {
-      navigate("/results");
+    
+      navigate('/results')
+      
     }
   }, [progress]);
 
@@ -92,6 +97,12 @@ function ProcessingPage() {
           </Typography>
         </Box>
       </Paper>
+    <LinearProgress
+      variant="query"
+      sx={{
+        height: 2,
+      }}
+    />
     </Container>
   );
 }

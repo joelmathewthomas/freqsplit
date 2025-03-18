@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Typography, 
@@ -7,7 +7,6 @@ import {
   Paper, 
   Box, 
   LinearProgress,
-  useTheme 
 } from '@mui/material';
 import { VolumeUp as VolumeUpIcon, ErrorOutline as ErrorIcon } from '@mui/icons-material';
 import StepperComponent from '../components/StepperComponent';
@@ -15,12 +14,10 @@ import { useMediaContext } from '../contexts/MediaContext';
 
 function PreviewPage() {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const { mediaFile } = useMediaContext();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { mediaFile, response } = useMediaContext();
   const [error, setError] = useState(false);
   const videoRef = useRef(null);
-  
+  const audioClass = response.audio_class
   // Supported video formats
   const supportedFormats = ['video/mp4', 'video/webm', 'video/ogg'];
   const isVideo = mediaFile && supportedFormats.includes(mediaFile.type);
@@ -31,17 +28,6 @@ function PreviewPage() {
     }
   }, [mediaFile, navigate]);
   
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   if (!mediaFile) return <LinearProgress />;
 
   return (
@@ -74,8 +60,6 @@ function PreviewPage() {
                 style={{ width: '100%', borderRadius: 8 }}
                 controls
                 onError={() => setError(true)}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
               />
               {error && (
                 <Typography color="error" sx={{ mt: 2 }}>
@@ -105,10 +89,9 @@ function PreviewPage() {
                   src={mediaFile.url}
                   style={{ width: '100%' }}
                   controls
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
                 />
               </Box>
+              <p>Audio Classification: {audioClass || "No data received"}</p>
             </Box>
           ) : (
             <Typography color="error" sx={{ mt: 2 }}>
@@ -129,12 +112,18 @@ function PreviewPage() {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/processing')}
+            onClick={() =>  navigate('/processing')}
           >
             Process Media
           </Button>
         </Box>
       </Paper>
+      <LinearProgress
+        variant="query"
+        sx={{
+          height: 2,
+        }}
+      />
     </Container>
   );
 }
