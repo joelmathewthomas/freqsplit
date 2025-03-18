@@ -75,11 +75,11 @@ function ResultsPage() {
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
               <VolumeUpIcon color="primary" sx={{ fontSize: 80, mb: 2 }} />
               <Typography variant="h6" gutterBottom>
-                {mediaFile.name} (Processed)
+                {mediaFile.name} (Original)
               </Typography>
               <Box sx={{ width: '100%', mt: 2, mb: 2 }}>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                  Original: {mediaFile.name}
+                  {mediaFile.name}
                 </Typography>
                 <audio
                   ref={mediaFileRef}
@@ -89,7 +89,13 @@ function ResultsPage() {
                 />
               </Box>
               {audioClass === "Music" ? (
-                extractedFiles.map((file, index) => (
+                <>
+                <Box sx={{ width: '100%', mt: 2 }}>
+                  <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
+                    Processed Files
+                  </Typography>
+                </Box>
+                {extractedFiles.map((file, index) => (
                   <Box key={index} sx={{ width: '100%', mt: 2 }}>
                     <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                       {file.name}
@@ -101,19 +107,27 @@ function ResultsPage() {
                       controls
                     />
                   </Box>
-                ))
+                ))}
+              </>
               ) : (
-                <Box sx={{ width: '100%', mt: 2 }}>
-                  <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                      {mediaFile?.name}
+                <>
+                  <Box sx={{ width: '100%', mt: 2 }}>
+                    <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
+                      Processed File
                     </Typography>
-                  <audio
-                    ref={audioRefs[0]}
-                    src={downloadedFileURL}
-                    style={{ width: '100%' }}
-                    controls
-                  />
-                </Box>
+                  </Box>
+                  <Box sx={{ width: '100%', mt: 2 }}>
+                    <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                        {mediaFile?.name}
+                      </Typography>
+                    <audio
+                      ref={audioRefs[0]}
+                      src={downloadedFileURL}
+                      style={{ width: '100%' }}
+                      controls
+                    />
+                  </Box>
+                </>
               )}
             </Box>
           )}
@@ -127,7 +141,7 @@ function ResultsPage() {
                   File Details
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  <strong>Name:</strong> {mediaFile.name} (Processed)
+                  <strong>Name:</strong> {mediaFile.name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   <strong>Type:</strong> {mediaFile.type}
