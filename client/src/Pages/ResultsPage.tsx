@@ -84,7 +84,7 @@ function ResultsPage() {
                 <audio
                   ref={mediaFileRef}
                   src={mediaFile.url}
-                  style={{ width: '100%' }}
+                  style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
                   controls
                 />
               </Box>
@@ -103,7 +103,7 @@ function ResultsPage() {
                     <audio
                       ref={audioRefs[index]}
                       src={file.url}
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
                       controls
                     />
                   </Box>
@@ -123,7 +123,7 @@ function ResultsPage() {
                     <audio
                       ref={audioRefs[0]}
                       src={downloadedFileURL}
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
                       controls
                     />
                   </Box>
@@ -156,17 +156,15 @@ function ResultsPage() {
             mt: 4,
             display: 'flex',
             justifyContent: 'space-between',
-            gap: 2, // Adds spacing between buttons
-            flexWrap: 'wrap', // Ensures better behavior on smaller screens
+            gap: 2,
+            flexWrap: 'wrap',
           }}
         >
           <Button variant="outlined" color="primary" onClick={() => navigate('/upload')}>
             Process Another File
           </Button>
-          <Button variant="contained" color="primary" onClick={() => navigate('/')}>
-            Back to Home
-          </Button>
-      </Box>
+          <Button variant="contained" color="primary" onClick={() => navigate('/')}>Download All Files</Button>
+        </Box>
       </Paper>
     </Container>
   );
