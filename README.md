@@ -34,7 +34,7 @@ freqsplit/
 │   │   ├── separation/     # Source separation with Demucs
 │   │   ├── postprocessing/ # Post-processing and saving results
 │   │   ├── refinement/     # Spectrogram-based enhancement
-│   │   ├── spectogram/     # Spectrogram generation and analysis
+│   │   ├── spectrogram/     # Spectrogram generation and analysis
 ├── tests/              # Unit and integration tests
 └── venv/               # Virtual environment (should be excluded from version control)
 ```
