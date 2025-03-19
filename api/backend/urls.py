@@ -25,8 +25,6 @@ from api.views import separate_music
 from api.views import noisereduce
 from api.views import download_audio
 from api.views import generate_spectrogram
-from api.views import cleanup
-from api.views import cleanup_zip
 
 urlpatterns = [
     path('api/ping', ping, name="ping"),
