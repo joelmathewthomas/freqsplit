@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const WEBSOCKET_URL = "ws://localhost:8000/ws/freqsplit/";
+const WEBSOCKET_URL = "/ws/freqsplit/";
 
 interface WebSocketContextType {
     socket: WebSocket | null;
