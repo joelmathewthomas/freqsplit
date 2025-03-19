@@ -12,11 +12,15 @@ const Logs = () => {
         padding: '8px',
         borderRadius: '4px',
         width: '100%',
-        minHeight: '100px',
+        minHeight: '200px',
         maxHeight: '200px',
         overflowY: 'auto',
         boxShadow: '0 0 5px rgba(0, 0, 0, 0.8)',
         mt: '40px',
+        scrollBehavior: 'smooth',
+      }}
+      ref={(el: HTMLDivElement | null) => {
+        if (el) el.scrollTop = el.scrollHeight;
       }}
     >
       {logs.length > 0 ? (
