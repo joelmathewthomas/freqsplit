@@ -16,12 +16,14 @@ import {
   Movie as MovieIcon,
 } from "@mui/icons-material";
 import StepperComponent from "../components/StepperComponent";
+import { useWebSocket } from "../contexts/WebSocketContext";
 import { useMediaContext } from "../contexts/MediaContext";
 import { formatLogMessage } from "../utils/logUtils";
 
 function UploadPage() {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { socket, isConnected } = useWebSocket();
   const { setMediaFile, setResponse, response, setLogs } = useMediaContext();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -141,6 +143,12 @@ function UploadPage() {
           spectrogram: res.data.spectrogram,
           spec_sr: res.data.spec_sr
         }));
+        if (socket && isConnected){
+          socket.send(JSON.stringify({ file_uuid: res.data.file_uuid }))
+        } else {
+          console.error("Websocket not connected!");
+        }
+        
         setUpload(true);
         setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: Uploaded file successfully`)])
         setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: file_uuid: ${res.data.file_uuid}`)])
