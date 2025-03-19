@@ -1,6 +1,11 @@
 # api/consumers.py
 import json
+import os
+import shutil
+from pathlib import Path
 from channels.generic.websocket import WebsocketConsumer
+
+UPLOAD_DIR = Path("/tmp/freqsplit")
 
 class MediaConsumer(WebsocketConsumer):
     def connect(self):
@@ -27,3 +32,10 @@ class MediaConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         print("Disconnected from Websocket")
         print("Stored file UUIDs:", self.file_uuid)
+        for file_uuid in self.file_uuid:
+            dir_path = os.path.join(UPLOAD_DIR, file_uuid);
+            try:
+                if os.path.exists(dir_path):
+                    shutil.rmtree(dir_path)
+            except Exception as e:
+                print(f"Error: Failed to cleanup {dir_path}: {e}")
