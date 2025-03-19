@@ -182,10 +182,10 @@ function ProcessingPage() {
       processStep("/api/trim", formatLogMessage("freqsplit/preprocessing: Pruning silent segments from audio"), () => {
         if (response.audio_class === "Music") {
           processStep("/api/resample", formatLogMessage(`freqsplit/preprocessing: Performing rate conversion: ${response.sr}Hz -> 44100Hz`), () => {
-            processStep("/api/separate", formatLogMessage(`freqsplit/separation: Demucs: Applying Time-domain source extraction`), () => fetchZipDownload(), 90, formatLogMessage("Separating music into vocals, bass, drums and other..."));
+            processStep("/api/separate", formatLogMessage(`freqsplit/separation: Demucs: Applying Time-domain source extraction`), () => fetchZipDownload(), 90, "Separating music into vocals, bass, drums and other...");
           }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
-          processStep("/api/noisereduce", formatLogMessage(`freqsplit/refinement: DeepFilterNet: Applying Spectral noise gating`), () => fetchDownload(), 90, formatLogMessage("Reducing background noise from the audio..."));
+          processStep("/api/noisereduce", formatLogMessage(`freqsplit/refinement: DeepFilterNet: Applying Spectral noise gating`), () => fetchDownload(), 90, "Reducing background noise from the audio...");
         }
       }, 50, "Trimming silent parts from the audio...");
     }, 25, "Normalizing audio frequency...");
