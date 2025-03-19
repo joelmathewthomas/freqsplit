@@ -78,8 +78,15 @@ def music_separation_task(file_path):
     # Determine the base directory (output path)
     output_path = file_path.parent
     
-    # Run Demucs separation
-    separate_audio_with_demucs(str(file_path), str(output_path))
+    try:
+        # Run Demucs separation
+        separate_audio_with_demucs(str(file_path), str(output_path))
+    except Exception as e:
+        print(f"Failed to separate music into sources: {e}")
+
+        if os.path.exists(os.path.dirname(file_path)):
+            shutil.rmtree(os.path.dirname(file_path))    
+        return False 
     
     # Define expected output dir
     demucs_dir = output_path / 'htdemucs'
@@ -116,6 +123,7 @@ def music_separation_task(file_path):
         return True
     
     except Exception as e:
+        print(f"Failed to separate music into sources: {e}")
         return False 
    
 @shared_task
@@ -142,16 +150,5 @@ def generate_spectrogram_task(file_path):
         spec_data_json = json.dumps(spec_db.tolist())
 
         return True, spec_data_json, plot_data['sr'] 
-    except Exception as e:
-        return False
-@shared_task
-def cleanup_task(file_path):
-    """Celery task to cleanup files"""
-    file_path = Path(file_path)
-    
-    # Cleanup
-    try:
-        shutil.rmtree(os.path.dirname(file_path))
-        return True
     except Exception as e:
         return False

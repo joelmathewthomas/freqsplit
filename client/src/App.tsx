@@ -11,6 +11,7 @@ import {
 import { Home as HomeIcon } from '@mui/icons-material';
 import theme from './theme/theme';
 import { MediaProvider } from './contexts/MediaContext';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 // Import pages
 import LandingPage from './Pages/LandingPage';
 import UploadPage from './Pages/UploadPage';
@@ -25,24 +26,26 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <MediaProvider>
-        <Router>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6" sx={{ flexGrow: 1 }}>FreqSplit</Typography>
-              <Button color="inherit" href="/"> <HomeIcon sx={{ mr: 1 }} /> Home </Button>
-            </Toolbar>
-          </AppBar>
+        <WebSocketProvider>
+          <Router>
+            <AppBar position="static">
+              <Toolbar>
+                <Typography variant="h6" sx={{ flexGrow: 1 }}>FreqSplit</Typography>
+                <Button color="inherit" href="/"> <HomeIcon sx={{ mr: 1 }} /> Home </Button>
+              </Toolbar>
+            </AppBar>
 
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/upload" element={<UploadPage />} />
-            <Route path="/preview" element={<PreviewPage />} />
-            <Route path="/processing" element={<ProcessingPage />} />
-            <Route path="/results" element={<ResultsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path='/audio' element={<AudioVisualizer />}/>
-          </Routes>
-        </Router>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/preview" element={<PreviewPage />} />
+              <Route path="/processing" element={<ProcessingPage />} />
+              <Route path="/results" element={<ResultsPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path='/audio' element={<AudioVisualizer />}/>
+            </Routes>
+          </Router>
+        </WebSocketProvider>
       </MediaProvider>
     </ThemeProvider>
   );
