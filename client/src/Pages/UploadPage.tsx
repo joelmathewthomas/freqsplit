@@ -102,7 +102,7 @@ function UploadPage() {
     formData.append("file", file);
   
     try {
-      setLogs((prevLogs) => [...prevLogs, formatLogMessage("Uploading audio file")]);
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage("freqsplit/input: Uploading audio file")]);
       const res = await axios.post<{
         file_uuid: string;
         sr: number;
@@ -126,9 +126,9 @@ function UploadPage() {
           spec_sr: res.data.spec_sr
         }));
         setUpload(true);
-        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`Uploaded file successfully`)])
-        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`file_uuid: ${res.data.file_uuid}`)])
-        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`audio_class: ${res.data.audio_class}`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: Uploaded file successfully`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: file_uuid: ${res.data.file_uuid}`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: audio_class: ${res.data.audio_class}`)])
       }
     } catch (error) {
       console.error("Upload failed:", error);
