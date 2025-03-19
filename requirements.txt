@@ -41,7 +41,6 @@ dora_search==0.1.12
 einops==0.8.1
 filelock==3.17.0
 fonttools==4.56.0
--e git+https://github.com/joelmathewthomas/freqsplit@c96b74c463f29fd5f50140701f92f92eb3109a2c#egg=freqsplit
 frozenlist==1.5.0
 fsspec==2025.2.0
 future==1.0.0
