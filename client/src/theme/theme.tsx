@@ -20,6 +20,11 @@ const theme = createTheme({
     h5: {
       fontWeight: 500,
     },
+    logText: {
+      fontFamily: 'monospace',
+      fontSize: '0.8rem',
+      whiteSpace: 'nowrap',
+    },
   },
   components: {
     MuiButton: {

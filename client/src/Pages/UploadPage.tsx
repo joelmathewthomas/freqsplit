@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Logs from "../components/Logs"
 import axios from "axios";
 import {
   Typography,
@@ -16,15 +17,29 @@ import {
 } from "@mui/icons-material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
+import { formatLogMessage } from "../utils/logUtils";
 
 function UploadPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { setMediaFile, setResponse, response } = useMediaContext();
+  const { setMediaFile, setResponse, response, setLogs } = useMediaContext();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState("");
   const [upload, setUpload] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLogs([formatLogMessage("Initializing freqsplit")]);
+      setTimeout(() => {
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connecting to server")]);
+        setTimeout(() => {
+          setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connection established successfully")]);
+        },80)
+      }, 90);
+    }, 100);
+    
+  }, []);
  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -87,6 +102,7 @@ function UploadPage() {
     formData.append("file", file);
   
     try {
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage("Uploading audio file")]);
       const res = await axios.post<{
         file_uuid: string;
         sr: number;
@@ -110,6 +126,9 @@ function UploadPage() {
           spec_sr: res.data.spec_sr
         }));
         setUpload(true);
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`Uploaded file successfully`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`file_uuid: ${res.data.file_uuid}`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`audio_class: ${res.data.audio_class}`)])
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -196,7 +215,7 @@ function UploadPage() {
           </Button>
         </Box>
       </Paper>
-      
+      <Logs />
     </Container>
   );
 }

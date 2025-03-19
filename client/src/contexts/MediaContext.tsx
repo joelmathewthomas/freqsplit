@@ -11,6 +11,8 @@ interface MediaContextType {
   setDownloadedFileURL: ( file: string) => void;
   downloadedFileSpectrogram: { spectrogram: string, spec_sr: number};
   setDownloadedFileSpectrogram: (spectrogram: {spectrogram: string, spec_sr: number}) => void;
+  logs: string[];
+  setLogs: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 
@@ -31,10 +33,10 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     spectrogram: "",
     spec_sr: 0
   });
-  
+  const [logs, setLogs] = useState<MediaContextType["logs"]>([""]);
 
   return (
-    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL, downloadedFileSpectrogram, setDownloadedFileSpectrogram }}>
+    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL, downloadedFileSpectrogram, setDownloadedFileSpectrogram, logs, setLogs }}>
       {children}
     </MediaContext.Provider>
   );
