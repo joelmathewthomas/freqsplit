@@ -34,8 +34,12 @@ class MediaConsumer(WebsocketConsumer):
         print("Stored file UUIDs:", self.file_uuid)
         for file_uuid in self.file_uuid:
             dir_path = os.path.join(UPLOAD_DIR, file_uuid);
+            zip_path = os.path.join(UPLOAD_DIR, f"{file_uuid}.zip")
             try:
                 if os.path.exists(dir_path):
                     shutil.rmtree(dir_path)
+                    
+                if os.path.isfile(zip_path):
+                    os.remove(zip_path)
             except Exception as e:
-                print(f"Error: Failed to cleanup {dir_path}: {e}")
+                print(f"Error: Failed to cleanup {dir_path} or {zip_path}: {e}")
