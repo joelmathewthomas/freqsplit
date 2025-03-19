@@ -27,18 +27,34 @@ function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState("");
   const [upload, setUpload] = useState(false);
+  const [inputEnabled, setInputEnabled] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
+    const startLogs = async () => {
       setLogs([formatLogMessage("Initializing freqsplit")]);
+  
       setTimeout(() => {
         setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connecting to server")]);
-        setTimeout(() => {
-          setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connection established successfully")]);
-        },80)
+  
+        // Send GET request to /api/ping
+        axios.get("/api/ping")
+          .then((ping_resp) => {
+            if (ping_resp.status === 200) {
+              setTimeout(() => {
+                setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connection established successfully")]);
+                setInputEnabled(true);
+              }, 80);
+            } else {
+              setLogs((prevLogs) => [...prevLogs, formatLogMessage("Failed to connect to server")]);
+            }
+          })
+          .catch(() => {
+            setLogs((prevLogs) => [...prevLogs, formatLogMessage("Failed to connect to server")]);
+          });
       }, 90);
-    }, 100);
-    
+    };
+  
+    startLogs();
   }, []);
  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -173,6 +189,7 @@ function UploadPage() {
             style={{ display: "none" }}
             onChange={handleFileChange}
             accept="audio/*,video/*"
+            disabled={!inputEnabled}
           />
           
           <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />

@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from api.views import ping
 from api.views import upload_audio
 from api.views import normalize_audio
 from api.views import trim_audio
@@ -28,6 +29,7 @@ from api.views import cleanup
 from api.views import cleanup_zip
 
 urlpatterns = [
+    path('api/ping', ping, name="ping"),
     path('admin/', admin.site.urls),
     path('api/upload', upload_audio, name='upload_audio'),
     path('api/normalize', normalize_audio, name="normalize_audio"),
