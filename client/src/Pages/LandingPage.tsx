@@ -45,7 +45,7 @@ function LandingPage() {
             Welcome to FreqSplit
           </Typography>
           <Typography variant="h5" paragraph color="textSecondary">
-            Upload, preview, and process your audio and video files with ease
+            Upload, preview, and process your audio files with ease
           </Typography>
           <Box sx={{ mt: 4 }}>
             <Button
