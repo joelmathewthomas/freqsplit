@@ -9,11 +9,14 @@ asteroid==0.7.0
 asteroid-filterbanks==0.4.0
 attrs==25.1.0
 audioread==3.0.1
+autobahn==24.4.2
+Automat==24.8.1
 billiard==4.2.1
 cached-property==2.0.1
 celery==5.4.0
 certifi==2025.1.31
 cffi==1.17.1
+channels==4.2.0
 charset-normalizer==3.4.1
 click==8.1.8
 click-didyoumean==0.3.1
@@ -21,9 +24,12 @@ click-plugins==1.1.1
 click-repl==0.3.0
 cloudpickle==3.1.1
 colorama==0.4.6
+constantly==23.10.4
 contourpy==1.3.1
 cors==1.0.1
+cryptography==44.0.2
 cycler==0.12.1
+daphne==4.1.2
 decorator==5.2.1
 DeepFilterLib==0.5.6
 DeepFilterNet==0.5.6
@@ -35,13 +41,16 @@ dora_search==0.1.12
 einops==0.8.1
 filelock==3.17.0
 fonttools==4.56.0
+-e git+https://github.com/joelmathewthomas/freqsplit@c96b74c463f29fd5f50140701f92f92eb3109a2c#egg=freqsplit
 frozenlist==1.5.0
 fsspec==2025.2.0
 future==1.0.0
 gevent==24.11.1
 greenlet==3.1.1
 huggingface-hub==0.29.1
+hyperlink==21.0.0
 idna==3.10
+incremental==24.7.2
 iniconfig==2.0.0
 Jinja2==3.1.5
 joblib==1.4.2
@@ -89,7 +98,10 @@ pluggy==1.5.0
 pooch==1.8.2
 prompt_toolkit==3.0.50
 propcache==0.3.0
+pyasn1==0.6.1
+pyasn1_modules==0.4.1
 pycparser==2.22
+pyOpenSSL==25.0.0
 pyparsing==3.2.1
 PySocks==1.7.1
 pystoi==0.4.1
@@ -107,6 +119,7 @@ retrying==1.3.4
 safetensors==0.5.3
 scikit-learn==1.6.1
 scipy==1.15.2
+service-identity==24.2.0
 setuptools==75.8.1
 six==1.17.0
 soundfile==0.13.1
@@ -127,6 +140,8 @@ tqdm==4.67.1
 transformers==4.49.0
 treetable==0.2.5
 triton==3.2.0
+Twisted==24.11.0
+txaio==23.1.1
 typing_extensions==4.12.2
 tzdata==2025.1
 urllib3==2.3.0
