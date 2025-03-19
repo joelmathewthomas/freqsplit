@@ -8,6 +8,7 @@ import {
   Box, 
   LinearProgress,
 } from '@mui/material';
+import Logs from "../components/Logs"
 import { VolumeUp as VolumeUpIcon, ErrorOutline as ErrorIcon } from '@mui/icons-material';
 import StepperComponent from '../components/StepperComponent';
 import { useMediaContext } from '../contexts/MediaContext';
@@ -129,6 +130,7 @@ function PreviewPage() {
           height: 2,
         }}
       />
+      <Logs />
     </Container>
   );
 }

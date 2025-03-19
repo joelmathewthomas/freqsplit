@@ -20,10 +20,12 @@ import StepperComponent from '../components/StepperComponent';
 import { useMediaContext } from '../contexts/MediaContext';
 // @ts-ignore
 import SpectrogramPlayer from "react-audio-spectrogram-player"
+import Logs from "../components/Logs"
+import { formatLogMessage } from "../utils/logUtils";
 
 function ResultsPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, extractedFiles, downloadedFileURL, downloadedFileSpectrogram } = useMediaContext();
+  const { mediaFile, response, extractedFiles, downloadedFileURL, downloadedFileSpectrogram, setLogs } = useMediaContext();
   console.log("Extracted files are", extractedFiles);
 //  const [isPlaying, setIsPlaying] = useState(false);
   const audioClass = response.audio_class
@@ -31,6 +33,7 @@ function ResultsPage() {
 
   const handleDownloadAll = () => {
     if (audioClass === 'Music') {
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage("Saving files")]);
       extractedFiles.forEach(({ name, url }) => {
         const link = document.createElement('a');
         link.href = url;
@@ -40,6 +43,7 @@ function ResultsPage() {
         document.body.removeChild(link);
       });
     } else {
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage("Saving file")]);
       const link = document.createElement('a');
       link.href = downloadedFileURL;
       link.download = mediaFile?.name ?? 'downloaded_file';
@@ -195,6 +199,7 @@ function ResultsPage() {
           <Button variant="contained" color="primary" onClick={handleDownloadAll}>Download All Files</Button>
         </Box>
       </Paper>
+      <Logs />
     </Container>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Logs from "../components/Logs"
 import axios from "axios";
 import {
   Typography,
@@ -16,15 +17,45 @@ import {
 } from "@mui/icons-material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
+import { formatLogMessage } from "../utils/logUtils";
 
 function UploadPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { setMediaFile, setResponse, response } = useMediaContext();
+  const { setMediaFile, setResponse, response, setLogs } = useMediaContext();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState("");
   const [upload, setUpload] = useState(false);
+  const [inputEnabled, setInputEnabled] = useState(false);
+
+  useEffect(() => {
+    const startLogs = async () => {
+      setLogs([formatLogMessage("Initializing freqsplit")]);
+  
+      setTimeout(() => {
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connecting to server")]);
+  
+        // Send GET request to /api/ping
+        axios.get("/api/ping")
+          .then((ping_resp) => {
+            if (ping_resp.status === 200) {
+              setTimeout(() => {
+                setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connection established successfully")]);
+                setInputEnabled(true);
+              }, 80);
+            } else {
+              setLogs((prevLogs) => [...prevLogs, formatLogMessage("Failed to connect to server")]);
+            }
+          })
+          .catch(() => {
+            setLogs((prevLogs) => [...prevLogs, formatLogMessage("Failed to connect to server")]);
+          });
+      }, 90);
+    };
+  
+    startLogs();
+  }, []);
  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -87,6 +118,7 @@ function UploadPage() {
     formData.append("file", file);
   
     try {
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage("freqsplit/input: Uploading audio file")]);
       const res = await axios.post<{
         file_uuid: string;
         sr: number;
@@ -110,6 +142,9 @@ function UploadPage() {
           spec_sr: res.data.spec_sr
         }));
         setUpload(true);
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: Uploaded file successfully`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: file_uuid: ${res.data.file_uuid}`)])
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: audio_class: ${res.data.audio_class}`)])
       }
     } catch (error) {
       console.error("Upload failed:", error);
@@ -154,6 +189,7 @@ function UploadPage() {
             style={{ display: "none" }}
             onChange={handleFileChange}
             accept="audio/*,video/*"
+            disabled={!inputEnabled}
           />
           
           <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
@@ -196,7 +232,7 @@ function UploadPage() {
           </Button>
         </Box>
       </Paper>
-      
+      <Logs />
     </Container>
   );
 }

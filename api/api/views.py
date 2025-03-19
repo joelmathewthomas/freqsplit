@@ -21,7 +21,12 @@ UPLOAD_DIR = "/tmp/freqsplit"
 # Ensure the temp directory exists
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-#
+# Endpoint to ping server
+@api_view(['GET'])
+def ping(request):
+    """Endpoint to ping the server"""
+    if (request):
+        return Response(status=status.HTTP_200_OK);
 
 # Endpoint to upload audio and classify it to audio_class
 @api_view(['POST'])

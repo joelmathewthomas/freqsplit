@@ -5,17 +5,24 @@ import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
 import JSZip from "jszip";
+import Logs from "../components/Logs"
+import { formatLogMessage } from "../utils/logUtils";
 
 function ProcessingPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL, setDownloadedFileSpectrogram } = useMediaContext();
+  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL, setDownloadedFileSpectrogram, setLogs } = useMediaContext();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Analyzing media...");
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const processStep = async (url: string, nextStep: () => void, progressValue: number, status: string, extraData = {}) => {
+  const processStep = async (url: string, log: string | null, nextStep: () => void, progressValue: number, status: string, extraData = {}) => {
     try {
+
+      if (log !== null) {
+        setLogs((prevLogs) => [...prevLogs, log]);
+      }
+
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
       Object.entries(extraData).forEach(([key, value]) => 
@@ -67,6 +74,10 @@ function ProcessingPage() {
         responseType: "blob",
       });
   
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/postprocessing: Exporting source file`)]);
+      setTimeout(() => {
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/postprocessing: Downloading file`)]);
+      }, 100);
       if (res.status === 200) {
         console.log("Download successful");
         const blob = new Blob([res.data], { type: "audio/wav" });
@@ -78,6 +89,7 @@ function ProcessingPage() {
         // Get spectrogram
         setProgress(95);
         setStatusText("Calculating Spectrogram");
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/spectrogram: Calculating spectrogram`)]);
 
         const formData = new FormData();
         formData.append("file_uuid", response.file_uuid);
@@ -114,6 +126,10 @@ function ProcessingPage() {
   
 
   const handleDownload = async (downloadData: Blob) => {
+    setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/postprocessing: Exporting source files`)]);
+    setTimeout(() => {
+      setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/postprocessing: Downloading files`)]);
+    }, 100);
     const zipBlob = new Blob([downloadData], { type: "application/zip" });
     const zip = await JSZip.loadAsync(zipBlob);
 
@@ -127,6 +143,7 @@ function ProcessingPage() {
         // Get spectrograms
         setProgress(95);
         setStatusText("Calculating Spectrograms");
+        setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/spectrogram: Calculating spectrograms`)]);
 
         const formData = new FormData();
         formData.append("file_uuid", response.file_uuid);
@@ -161,14 +178,14 @@ function ProcessingPage() {
 
     console.log("Starting processing...");
 
-    processStep("/api/normalize", () => {
-      processStep("/api/trim", () => {
+    processStep("/api/normalize", formatLogMessage("freqsplit/preprocessing: Applying amplitude scaling"), () => {
+      processStep("/api/trim", formatLogMessage("freqsplit/preprocessing: Pruning silent segments from audio"), () => {
         if (response.audio_class === "Music") {
-          processStep("/api/resample", () => {
-            processStep("/api/separate", () => fetchZipDownload(), 90, "Separating music into vocals, bass, drums and other...");
+          processStep("/api/resample", formatLogMessage(`freqsplit/preprocessing: Performing rate conversion: ${response.sr}Hz -> 44100Hz`), () => {
+            processStep("/api/separate", formatLogMessage(`freqsplit/separation: Demucs: Applying Time-domain source extraction`), () => fetchZipDownload(), 90, "Separating music into vocals, bass, drums and other...");
           }, 75, "Resampling audio to 44100Hz...", { sr: "44100" });
         } else {
-          processStep("/api/noisereduce", () => fetchDownload(), 90, "Reducing background noise from the audio...");
+          processStep("/api/noisereduce", formatLogMessage(`freqsplit/refinement: DeepFilterNet: Applying Spectral noise gating`), () => fetchDownload(), 90, "Reducing background noise from the audio...");
         }
       }, 50, "Trimming silent parts from the audio...");
     }, 25, "Normalizing audio frequency...");
@@ -217,6 +234,7 @@ function ProcessingPage() {
         height: 2,
       }}
     />
+    <Logs />
     </Container>
   );
 }
