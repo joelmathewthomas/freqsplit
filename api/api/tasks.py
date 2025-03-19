@@ -144,14 +144,3 @@ def generate_spectrogram_task(file_path):
         return True, spec_data_json, plot_data['sr'] 
     except Exception as e:
         return False
-@shared_task
-def cleanup_task(file_path):
-    """Celery task to cleanup files"""
-    file_path = Path(file_path)
-    
-    # Cleanup
-    try:
-        shutil.rmtree(os.path.dirname(file_path))
-        return True
-    except Exception as e:
-        return False

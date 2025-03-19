@@ -13,7 +13,6 @@ from .tasks import resample_audio_task
 from .tasks import music_separation_task
 from .tasks import noisereduce_task
 from .tasks import generate_spectrogram_task
-from .tasks import cleanup_task
 from freqsplit.input.format_checker import is_supported_format
 
 UPLOAD_DIR = "/tmp/freqsplit"
@@ -221,37 +220,3 @@ def download_audio(request):
 
     # Stream the ZIP file
     return FileResponse(open(zip_file_path, "rb"), as_attachment=True, filename=os.path.basename(zip_file_path))
-
-@api_view(['POST'])
-def cleanup(request):
-    """Handles file cleanup after pipeline processing"""
-    stat, result, status_code = get_audio_file_path(request, UPLOAD_DIR)
-    if stat == False:
-        return Response({"error": result}, status=status_code)  
-
-    # Call Celery task synchronously
-    task = cleanup_task.apply(args=(result,))
-
-    if task.get():
-        return Response({"message": f"Successfully cleaned up files on the server"}, status=status.HTTP_200_OK)
-    else:
-        return Response({"error": "Failed to cleanup files on the server"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['POST'])
-def cleanup_zip(request):
-    """Handles cleanup of all zip files leftover by api/download"""
-    deleted_files = []
-    
-    for file in os.listdir(UPLOAD_DIR):
-        if file.endswith(".zip"):
-            file_path = os.path.join(UPLOAD_DIR, file)
-            try:
-                os.remove(file_path)
-                deleted_files.append(file)
-            except Exception as e:
-                return Response({"message": f"Error deleting {file_path}: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    if deleted_files:
-        return Response({"message": f"Deleted ZIP files: {deleted_files}"}, status=status.HTTP_200_OK)
-    else:
-        return Response({"message": "No ZIP files found to clean up."}, status=status.HTTP_200_OK)
