@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Logs from "../components/Logs"
+import Toast from "../components/Toast";
 import axios from "axios";
 import {
   Typography,
@@ -23,12 +24,16 @@ function UploadPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { socket, isConnected } = useWebSocket();
-  const { setMediaFile, setResponse, setLogs } = useMediaContext();
+  const { setMediaFile, setResponse, setLogs, setToastOpen, setToastMessage } = useMediaContext();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [fileError, setFileError] = useState("");
   const [upload, setUpload] = useState(false);
   const [inputEnabled, setInputEnabled] = useState(false);
+
+  const showErrorToast = (message: string) => {
+    setToastMessage(message);
+    setToastOpen(true);
+  }
 
   useEffect(() => {
     const startLogs = async () => {
@@ -102,7 +107,6 @@ function UploadPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUpload(false);
-    setFileError("");
     setResponse({
       audio_class: "",
       file_uuid: "",
@@ -115,7 +119,7 @@ function UploadPage() {
     
     if (selectedFile) {
       if (selectedFile.size > maxSize) {
-        setFileError("Max file size is 100MB!");
+        showErrorToast("Max file size is 100MB!");
         setFile(null);
         setUpload(false);
         e.target.value = "";
@@ -128,13 +132,11 @@ function UploadPage() {
   };
 
   const validateAndSetFile = (file: File | null) => {
-    setFileError("");
-
     if (!file) return;
 
     const fileType = file.type;
     if (!fileType.includes("audio") && !fileType.includes("video")) {
-      setFileError("Please upload only audio or video files.");
+      showErrorToast("Please upload only audio or video files.");
       return;
     }
 
@@ -151,7 +153,7 @@ function UploadPage() {
       }); //
       navigate('/preview');
     } else {
-      setFileError("Please upload a file to continue.");
+      showErrorToast("Please upload a file to continue");
     }
   };
 
@@ -198,6 +200,16 @@ function UploadPage() {
         setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/input: audio_class: ${res.data.audio_class}`)])
       }
     } catch (error) {
+      showErrorToast("Failed to upload file");
+      setUpload(false);
+      setResponse({
+        audio_class: "",
+        file_uuid: "",
+        sr: 0,
+        spectrogram: "",
+        spec_sr: 0
+      });
+      setFile(null);
       console.error("Upload failed:", error);
     }
   };
@@ -255,12 +267,6 @@ function UploadPage() {
           )}
         </Box>
 
-        {fileError && (
-          <Typography variant="body2" color="error" sx={{ mt: 1 }}>
-            {fileError}
-          </Typography>
-        )}
-
         <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between" }}>
           <Button
             variant="outlined"
@@ -280,6 +286,7 @@ function UploadPage() {
         </Box>
       </Paper>
       <Logs />
+      <Toast />
     </Container>
   );
 }
