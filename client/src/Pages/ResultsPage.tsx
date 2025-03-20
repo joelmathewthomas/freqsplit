@@ -12,7 +12,6 @@ import {
   LinearProgress,
 } from '@mui/material';
 import { 
-  Check as CheckIcon,
   VolumeUp as VolumeUpIcon 
 } from '@mui/icons-material';
 import StepperComponent from '../components/StepperComponent';
