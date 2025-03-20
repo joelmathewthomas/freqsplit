@@ -56,7 +56,6 @@ function ProcessingPage() {
       });
   
       if (res.status === 200) {
-        console.log("Download successful");
         await handleDownload(res.data);
       } else {
         console.log("Failed to download the file");
@@ -79,7 +78,6 @@ function ProcessingPage() {
         setLogs((prevLogs) => [...prevLogs, formatLogMessage(`freqsplit/postprocessing: Downloading file`)]);
       }, 100);
       if (res.status === 200) {
-        console.log("Download successful");
         const blob = new Blob([res.data], { type: "audio/wav" });
         const fileURL = URL.createObjectURL(blob);
 
@@ -165,7 +163,6 @@ function ProcessingPage() {
         fileURLs.push({ name: filename, url: fileURL, spectrogram: res.data.spectrogram, spec_sr: res.data.spec_sr });
       }
     }
-    console.log(fileURLs)
     setExtractedFiles(fileURLs);
     setProgress(100);
   };
@@ -176,7 +173,6 @@ function ProcessingPage() {
       return;
     }
 
-    console.log("Starting processing...");
 
     processStep("/api/normalize", formatLogMessage("freqsplit/preprocessing: Applying amplitude scaling"), () => {
       processStep("/api/trim", formatLogMessage("freqsplit/preprocessing: Pruning silent segments from audio"), () => {

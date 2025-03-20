@@ -73,7 +73,6 @@ def resample_audio_task(file_path, sr):
 def music_separation_task(file_path):
     """Celery task to separate music audio into sources"""
     file_path = Path(file_path)
-    print("File path is ", file_path)
     
     # Determine the base directory (output path)
     output_path = file_path.parent
