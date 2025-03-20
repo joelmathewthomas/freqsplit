@@ -62,11 +62,17 @@ function ResultsPage() {
       <StepperComponent activeStep={3} />
       
       <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3 }}>
-          <CheckIcon sx={{ color: 'success.main', fontSize: 36, mr: 1 }} />
-          <Typography variant="h4" color="primary">
-            Processing Complete!
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3, overflow: "auto" }}>
+        <Typography
+          variant="h4"
+          color="primary"
+          sx={{
+            textAlign: "center",
+            width: "100%",
+          }}
+        >
+          Processing Complete!
+        </Typography>
         </Box>
         
         <Typography variant="body1" paragraph color="textSecondary" align="center">
@@ -77,7 +83,7 @@ function ResultsPage() {
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
           <VolumeUpIcon color="primary" sx={{ fontSize: 80, mb: 2 }} />
           <Typography variant="h6" gutterBottom>
-            {mediaFile.name} (Original)
+            {mediaFile.name}
           </Typography>
           <Box sx={{ width: '100%', mt: 2, mb: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
             <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
@@ -96,7 +102,7 @@ function ResultsPage() {
           {audioClass === "Music" ? (
             <>
             <Box sx={{ width: '100%', mt: 2 }}>
-              <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
+              <Typography variant="h4" color="textPrimary" sx={{ mb: 1 }}>
                 Processed Files
               </Typography>
             </Box>

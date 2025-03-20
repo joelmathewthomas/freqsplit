@@ -237,6 +237,7 @@ function UploadPage() {
               : "transparent",
             transition: "all 0.3s ease",
             cursor: "pointer",
+            overflow: "auto"
           }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -253,7 +254,16 @@ function UploadPage() {
           />
           
           <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
-          <Typography variant="h6" gutterBottom>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "100%", // Ensure it adapts to the box size
+            }}
+          >
             {file ? file.name : "Drop your file here or click to browse files"}
           </Typography>
           <Typography>
