@@ -55,17 +55,6 @@ function ResultsPage() {
     }
   }, [mediaFile, navigate]);
   
-//  const togglePlay = (index) => {
-//    if (audioRefs[index].current) {
-//      if (isPlaying) {
-//        audioRefs[index].current.pause();
-//      } else {
-//        audioRefs[index].current.play();
-//      }
-//      setIsPlaying(!isPlaying);
-//    }
-//  };
-
   if (!mediaFile) return <LinearProgress />;
   
   return (
