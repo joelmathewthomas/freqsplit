@@ -6,46 +6,65 @@ import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
 import JSZip from "jszip";
 import Logs from "../components/Logs"
+import Toast from "../components/Toast";
 import { formatLogMessage } from "../utils/logUtils";
 
 function ProcessingPage() {
   const navigate = useNavigate();
-  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL, setDownloadedFileSpectrogram, setLogs } = useMediaContext();
+  const { mediaFile, response, setExtractedFiles, setDownloadedFileURL, setDownloadedFileSpectrogram, setLogs, setToastOpen, setToastMessage } = useMediaContext();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Analyzing media...");
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const processStep = async (url: string, log: string | null, nextStep: () => void, progressValue: number, status: string, extraData = {}) => {
-    try {
+  const showErrorToast = (message: string) => {
+    setToastMessage(message);
+    setToastOpen(true);
+  }
 
+  const processStep = async (
+    url: string,
+    log: string | null,
+    nextStep: () => void,
+    progressValue: number,
+    status: string,
+    extraData = {}
+  ) => {
+    try {
       if (log !== null) {
         setLogs((prevLogs) => [...prevLogs, log]);
       }
-
+  
       const formData = new FormData();
       formData.append("file_uuid", response.file_uuid);
-      Object.entries(extraData).forEach(([key, value]) => 
+      Object.entries(extraData).forEach(([key, value]) =>
         formData.append(key, String(value))
       );
-      
-
+  
       setStatusText(status);
       const startTime = Date.now();
-      const res = await axios.post(url, formData, {
+      await axios.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      if (res.status === 200 && res.data) {
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime < 5000) await delay(5000 - elapsedTime);
-        setProgress(progressValue);
-        nextStep();
-      }
+  
+      const elapsedTime = Date.now() - startTime;
+      if (elapsedTime < 5000) await delay(5000 - elapsedTime);
+  
+      setProgress(progressValue);
+      nextStep();
     } catch (error) {
-      console.error(`Error in step: ${url}`, error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 500) {
+          showErrorToast(`Internal Server Error`);
+        } else {
+          showErrorToast(`Internal Server Error`);
+        }
+      } else {
+        showErrorToast(`Internal Server Error`);
+      }
     }
   };
+  
 
   const fetchZipDownload = async () => {
     try {
@@ -61,7 +80,15 @@ function ProcessingPage() {
         console.log("Failed to download the file");
       }
     } catch (error) {
-      console.error("Error fetching download:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 500) {
+          showErrorToast(`Internal Server Error`);
+        } else {
+          showErrorToast(`Internal Server Error`);
+        }
+      } else {
+        showErrorToast(`Internal Server Error`);
+      }
     }
   };
 
@@ -118,7 +145,15 @@ function ProcessingPage() {
         console.log("Failed to download the file");
       }
     } catch (error) {
-      console.error("Error fetching download:", error);
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 500) {
+          showErrorToast(`Internal Server Error`);
+        } else {
+          showErrorToast(`Internal Server Error`);
+        }
+      } else {
+        showErrorToast(`Internal Server Error`);
+      }
     }
   };
   
@@ -134,7 +169,8 @@ function ProcessingPage() {
     const fileURLs = [];
 
     for (const [filename, fileData] of Object.entries(zip.files)) {
-      if (!fileData.dir) {
+      try {
+        if (!fileData.dir) {
         const fileBlob = await fileData.async("blob");
         const fileURL = URL.createObjectURL(fileBlob);
         
@@ -161,6 +197,17 @@ function ProcessingPage() {
 
         }
         fileURLs.push({ name: filename, url: fileURL, spectrogram: res.data.spectrogram, spec_sr: res.data.spec_sr });
+      }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+        if (error.response?.status === 500) {
+          showErrorToast(`Internal Server Error`);
+        } else {
+          showErrorToast(`Internal Server Error`);
+        }
+      } else {
+        showErrorToast(`Internal Server Error`);
+      }
       }
     }
     setExtractedFiles(fileURLs);
@@ -231,7 +278,8 @@ function ProcessingPage() {
       }}
     />
     <Logs />
-    </Container>
+    <Toast />
+  </Container>
   );
 }
 

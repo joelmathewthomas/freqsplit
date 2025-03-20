@@ -13,6 +13,10 @@ interface MediaContextType {
   setDownloadedFileSpectrogram: (spectrogram: {spectrogram: string, spec_sr: number}) => void;
   logs: string[];
   setLogs: React.Dispatch<React.SetStateAction<string[]>>;
+  toastOpen: boolean;
+  setToastOpen: ( value: boolean) => void;
+  toastMessage: string;
+  setToastMessage: ( message: string) => void;
 }
 
 
@@ -34,9 +38,11 @@ export const MediaProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     spec_sr: 0
   });
   const [logs, setLogs] = useState<MediaContextType["logs"]>([""]);
+  const [toastOpen, setToastOpen] = useState<MediaContextType["toastOpen"]>(false);
+  const [toastMessage, setToastMessage] = useState<MediaContextType["toastMessage"]>("");
 
   return (
-    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL, downloadedFileSpectrogram, setDownloadedFileSpectrogram, logs, setLogs }}>
+    <MediaContext.Provider value={{ mediaFile, setMediaFile, response, setResponse, extractedFiles, setExtractedFiles, downloadedFileURL, setDownloadedFileURL, downloadedFileSpectrogram, setDownloadedFileSpectrogram, logs, setLogs, toastOpen, setToastOpen, toastMessage, setToastMessage }}>
       {children}
     </MediaContext.Provider>
   );
