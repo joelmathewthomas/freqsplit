@@ -19,8 +19,8 @@ An evolving **audio processing pipeline** designed to separate and enhance audio
 
 ```bash
 freqsplit/
-├── api/                # API implementation (future work)
-├── client/             # Client-side interactions (future work)
+├── api/                # API implementation (django, redis, celery)
+├── client/             # Client-side interactions (vite, react, typescript)
 ├── LICENSE             # License file
 ├── pyproject.toml      # Project metadata and dependencies
 ├── pytest.ini          # Pytest configuration
