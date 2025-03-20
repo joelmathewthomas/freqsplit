@@ -20,7 +20,6 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         const newSocket = new WebSocket(WEBSOCKET_URL);
 
         newSocket.onopen = () => {
-            console.log("Connected to WebSocket!");
             setIsConnected(true);
         };
 
@@ -34,7 +33,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         };
 
         newSocket.onmessage = (event) => {
-            console.log("Message from server:", event.data);
+            console.log("ws/freqsplit: ", JSON.parse(event.data).response);
         };
 
         setSocket(newSocket);

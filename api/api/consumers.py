@@ -12,7 +12,7 @@ class MediaConsumer(WebsocketConsumer):
         self.accept()
         self.file_uuid = [] # List to store file uuids
         self.send(text_data=json.dumps({
-            "message": "Connected to WebSocket server!"
+            "response": "Pong!"
         }))
         
     def receive(self, text_data):
@@ -23,15 +23,12 @@ class MediaConsumer(WebsocketConsumer):
         if "file_uuid" in data:
             uuid = data["file_uuid"]
             self.file_uuid.append(uuid)
-            self.send(text_data=json.dumps({"response": f"UUID {uuid} stored."}))
         elif message == "ping":
             self.send(text_data=json.dumps({"response": "pong"}))
         else:
             self.send(text_data=json.dumps({"response": f"Received: {message}"}))
             
     def disconnect(self, close_code):
-        print("Disconnected from Websocket")
-        print("Stored file UUIDs:", self.file_uuid)
         for file_uuid in self.file_uuid:
             dir_path = os.path.join(UPLOAD_DIR, file_uuid);
             zip_path = os.path.join(UPLOAD_DIR, f"{file_uuid}.zip")

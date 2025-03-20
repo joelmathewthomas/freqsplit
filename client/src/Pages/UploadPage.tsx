@@ -24,7 +24,7 @@ function UploadPage() {
   const navigate = useNavigate();
   const theme = useTheme();
   const { socket, isConnected } = useWebSocket();
-  const { setMediaFile, setResponse, response, setLogs } = useMediaContext();
+  const { setMediaFile, setResponse, setLogs } = useMediaContext();
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [fileError, setFileError] = useState("");
@@ -158,8 +158,6 @@ function UploadPage() {
         },
       });
   
-      console.log("Upload response:", res);
-  
       if (res.status === 201 && res.data) {
         setResponse( ({
           audio_class: res.data.audio_class,
@@ -184,9 +182,6 @@ function UploadPage() {
     }
   };
   
-  useEffect(() => {
-    console.log("Updated response:", response);
-  }, [response]);
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <StepperComponent activeStep={0} />

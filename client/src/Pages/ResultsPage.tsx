@@ -26,8 +26,6 @@ import { formatLogMessage } from "../utils/logUtils";
 function ResultsPage() {
   const navigate = useNavigate();
   const { mediaFile, response, extractedFiles, downloadedFileURL, downloadedFileSpectrogram, setLogs } = useMediaContext();
-  console.log("Extracted files are", extractedFiles);
-//  const [isPlaying, setIsPlaying] = useState(false);
   const audioClass = response.audio_class
   const isVideo = mediaFile?.type.includes('video');
 
