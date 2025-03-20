@@ -27,7 +27,6 @@ function ResultsPage() {
   const navigate = useNavigate();
   const { mediaFile, response, extractedFiles, downloadedFileURL, downloadedFileSpectrogram, setLogs } = useMediaContext();
   const audioClass = response.audio_class
-  const isVideo = mediaFile?.type.includes('video');
 
   const handleDownloadAll = () => {
     if (audioClass === 'Music') {
@@ -87,82 +86,74 @@ function ResultsPage() {
         </Typography>
         
         <Box sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
-          {isVideo ? (
-            <video
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
+          <VolumeUpIcon color="primary" sx={{ fontSize: 80, mb: 2 }} />
+          <Typography variant="h6" gutterBottom>
+            {mediaFile.name} (Original)
+          </Typography>
+          <Box sx={{ width: '100%', mt: 2, mb: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+              {mediaFile.name}
+            </Typography>
+            <SpectrogramPlayer
               src={mediaFile.url}
-              style={{ width: '100%', borderRadius: 8 }}
-              controls
+              sxx={JSON.parse(response.spectrogram)}
+              SampleRate={response.spec_sr}
+              colormap={'magma'}
+              settings={true}
+              transparent={false}
+              navigator={true}
             />
-          ) : (
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, bgcolor: 'rgba(0, 0, 0, 0.04)', borderRadius: 2 }}>
-              <VolumeUpIcon color="primary" sx={{ fontSize: 80, mb: 2 }} />
-              <Typography variant="h6" gutterBottom>
-                {mediaFile.name} (Original)
+          </Box>
+          {audioClass === "Music" ? (
+            <>
+            <Box sx={{ width: '100%', mt: 2 }}>
+              <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
+                Processed Files
               </Typography>
-              <Box sx={{ width: '100%', mt: 2, mb: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
+            </Box>
+            {extractedFiles.map((file, index) => (
+              <Box key={index} sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                  {mediaFile.name}
+                  {file.name}
                 </Typography>
                 <SpectrogramPlayer
-                  src={mediaFile.url}
-                  sxx={JSON.parse(response.spectrogram)}
-                  SampleRate={response.spec_sr}
+                  src={file.url}
+                  sxx={JSON.parse(file.spectrogram)}
+                  SampleRate={file.spec_sr}
                   colormap={'magma'}
                   settings={true}
                   transparent={false}
                   navigator={true}
                 />
               </Box>
-              {audioClass === "Music" ? (
-                <>
-                <Box sx={{ width: '100%', mt: 2 }}>
-                  <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
-                    Processed Files
+            ))}
+          </>
+          ) : (
+            <>
+              <Box sx={{ width: '100%', mt: 2 }}>
+                <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
+                  Processed File
+                </Typography>
+              </Box>
+              <Box sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                    {mediaFile?.name}
                   </Typography>
-                </Box>
-                {extractedFiles.map((file, index) => (
-                  <Box key={index} sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
-                    <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                      {file.name}
-                    </Typography>
-                    <SpectrogramPlayer
-                      src={file.url}
-                      sxx={JSON.parse(file.spectrogram)}
-                      SampleRate={file.spec_sr}
-                      colormap={'magma'}
-                      settings={true}
-                      transparent={false}
-                      navigator={true}
-                    />
-                  </Box>
-                ))}
-              </>
-              ) : (
-                <>
-                  <Box sx={{ width: '100%', mt: 2 }}>
-                    <Typography variant="h6" color="textPrimary" sx={{ mb: 1 }}>
-                      Processed File
-                    </Typography>
-                  </Box>
-                  <Box sx={{ width: '100%', mt: 2, border: `1px solid gray`, p:2, borderRadius: 2 }}>
-                    <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                        {mediaFile?.name}
-                      </Typography>
-                      <SpectrogramPlayer
-                      src={downloadedFileURL}
-                      sxx={JSON.parse(downloadedFileSpectrogram.spectrogram)}
-                      SampleRate={downloadedFileSpectrogram.spec_sr}
-                      colormap={'magma'}
-                      settings={true}
-                      transparent={false}
-                      navigator={true}
-                    />
-                  </Box>
-                </>
-              )}
-            </Box>
+                  <SpectrogramPlayer
+                  src={downloadedFileURL}
+                  sxx={JSON.parse(downloadedFileSpectrogram.spectrogram)}
+                  SampleRate={downloadedFileSpectrogram.spec_sr}
+                  colormap={'magma'}
+                  settings={true}
+                  transparent={false}
+                  navigator={true}
+                />
+              </Box>
+            </>
           )}
         </Box>
+      </Box>
         
         <Grid container spacing={3} sx={{ mt: 2 }}>
           <Grid item xs={12} sm={6}>

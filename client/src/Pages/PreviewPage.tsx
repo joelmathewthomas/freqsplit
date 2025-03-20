@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Typography, 
@@ -18,12 +18,7 @@ import SpectrogramPlayer from "react-audio-spectrogram-player"
 function PreviewPage() {
   const navigate = useNavigate();
   const { mediaFile, response } = useMediaContext();
-  const [error, setError] = useState(false);
-  const videoRef = useRef(null);
   const audioClass = response.audio_class
-  // Supported video formats
-  const supportedFormats = ['video/mp4', 'video/webm', 'video/ogg'];
-  const isVideo = mediaFile && supportedFormats.includes(mediaFile.type);
 
   useEffect(() => {
     if (!mediaFile) {
@@ -46,32 +41,7 @@ function PreviewPage() {
         </Typography>
         
         <Box sx={{ mt: 4, mb: 4, textAlign: 'center' }}>
-          {isVideo ? (
-            <Box
-              sx={{
-                position: 'relative',
-                width: '100%',
-                maxWidth: '100%',
-                borderRadius: 2,
-                overflow: 'hidden',
-                bgcolor: 'black',
-              }}
-            >
-              <video
-                ref={videoRef}
-                src={mediaFile.url}
-                style={{ width: '100%', borderRadius: 8 }}
-                controls
-                onError={() => setError(true)}
-              />
-              {error && (
-                <Typography color="error" sx={{ mt: 2 }}>
-                  <ErrorIcon sx={{ mr: 1 }} />
-                  Video format not supported. Please upload MP4, WebM, or Ogg.
-                </Typography>
-              )}
-            </Box>
-          ) : mediaFile.type.startsWith('audio/') ? (
+          {mediaFile.type.startsWith('audio/') ? (
             <Box
               sx={{
                 display: 'flex',

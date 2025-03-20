@@ -13,7 +13,6 @@ import {
 import {
   CloudUpload as CloudUploadIcon,
   VolumeUp as VolumeUpIcon,
-  Movie as MovieIcon,
 } from "@mui/icons-material";
 import StepperComponent from "../components/StepperComponent";
 import { useWebSocket } from "../contexts/WebSocketContext";
@@ -216,7 +215,7 @@ function UploadPage() {
             id="fileInput"
             style={{ display: "none" }}
             onChange={handleFileChange}
-            accept="audio/*,video/*"
+            accept="audio/*"
             disabled={!inputEnabled}
           />
           
@@ -226,11 +225,7 @@ function UploadPage() {
           </Typography>
           {file && (
             <Typography variant="body2" color="textSecondary">
-              {file.type.includes("video") ? (
-                <MovieIcon sx={{ mr: 1 }} />
-              ) : (
-                <VolumeUpIcon sx={{ mr: 1 }} />
-              )}
+              {file.type.includes("audio") ? <VolumeUpIcon sx={{ mr: 1 }} /> : null}
               {file.type} - {(file.size / (1024 * 1024)).toFixed(2)} MB
             </Typography>
           )}
