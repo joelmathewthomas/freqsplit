@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate} from "react-router-dom";
-import { Typography, Container, Paper, Box, LinearProgress } from "@mui/material";
+import { Typography, Container, Paper, Box, LinearProgress, CircularProgress } from "@mui/material";
 import StepperComponent from "../components/StepperComponent";
 import { useMediaContext } from "../contexts/MediaContext";
 import axios from "axios";
@@ -255,11 +255,11 @@ function ProcessingPage() {
         </Typography>
 
         <Box sx={{ mt: 4, mb: 2 }}>
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            sx={{ height: 10, borderRadius: 5 }}
-          />
+        <CircularProgress 
+          variant="determinate" 
+          value={progress} 
+          sx={{ width: 80, height: 80 }} 
+        />
           <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
             {Math.round(progress)}% Complete
           </Typography>

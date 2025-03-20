@@ -152,7 +152,7 @@ function ResultsPage() {
           <Grid item xs={12} sm={6}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography gutterBottom>
                   File Details
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
