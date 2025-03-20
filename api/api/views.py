@@ -1,4 +1,5 @@
 import os
+import shutil
 import uuid
 import zipfile
 from django.http import FileResponse, HttpResponse
@@ -18,6 +19,7 @@ from freqsplit.input.format_checker import is_supported_format
 UPLOAD_DIR = "/tmp/freqsplit"
 
 # Ensure the temp directory exists
+shutil.rmtree(UPLOAD_DIR)
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Endpoint to ping server
