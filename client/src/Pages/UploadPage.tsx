@@ -102,6 +102,16 @@ function UploadPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
+    const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+    
+    if (selectedFile) {
+      if (selectedFile.size > maxSize) {
+        alert("File size exceeds 100MB limit.");
+        e.target.value = "";
+        return;
+      }
+    }
+
     validateAndSetFile(selectedFile);
     handleUpload(selectedFile);
   };
