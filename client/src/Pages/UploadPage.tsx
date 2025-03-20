@@ -101,12 +101,23 @@ function UploadPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpload(false);
+    setFileError("");
+    setResponse({
+      audio_class: "",
+      file_uuid: "",
+      sr: 0,
+      spectrogram: "",
+      spec_sr: 0
+    });
     const selectedFile = e.target.files?.[0] || null;
     const maxSize = 100 * 1024 * 1024; // 100MB in bytes
     
     if (selectedFile) {
       if (selectedFile.size > maxSize) {
-        alert("File size exceeds 100MB limit.");
+        setFileError("Max file size is 100MB!");
+        setFile(null);
+        setUpload(false);
         e.target.value = "";
         return;
       }
@@ -232,6 +243,9 @@ function UploadPage() {
           <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
           <Typography variant="h6" gutterBottom>
             {file ? file.name : "Drop your file here or click to browse files"}
+          </Typography>
+          <Typography>
+            Max file size: 100MB
           </Typography>
           {file && (
             <Typography variant="body2" color="textSecondary">
