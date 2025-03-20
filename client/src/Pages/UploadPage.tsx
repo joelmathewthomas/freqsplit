@@ -35,29 +35,54 @@ function UploadPage() {
     const startLogs = async () => {
       setLogs([formatLogMessage("Initializing freqsplit")]);
   
-      setTimeout(() => {
-        setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connecting to server")]);
+      setLogs((prevLogs) => [
+        ...prevLogs,
+        formatLogMessage("Connecting to server"),
+      ]);
   
-        // Send GET request to /api/ping
-        axios.get("/api/ping")
-          .then((ping_resp) => {
-            if (ping_resp.status === 200) {
-              setTimeout(() => {
-                setLogs((prevLogs) => [...prevLogs, formatLogMessage("Connection established successfully")]);
+      axios
+        .get("/api/ping")
+        .then((ping_resp) => {
+          if (ping_resp.status === 200) {
+            setLogs((prevLogs) => [
+              ...prevLogs,
+              formatLogMessage("Connection established successfully"),
+            ]);
+            setLogs((prevLogs) => [
+              ...prevLogs,
+              formatLogMessage("Waiting for WebSocket connection"),
+            ]);
+  
+            const checkWebSocketConnection = () => {
+              if (isConnected) {
+                setLogs((prevLogs) => [
+                  ...prevLogs,
+                  formatLogMessage("WebSocket connected"),
+                ]);
                 setInputEnabled(true);
-              }, 80);
-            } else {
-              setLogs((prevLogs) => [...prevLogs, formatLogMessage("Failed to connect to server")]);
-            }
-          })
-          .catch(() => {
-            setLogs((prevLogs) => [...prevLogs, formatLogMessage("Failed to connect to server")]);
-          });
-      }, 90);
+              } else {
+                setTimeout(checkWebSocketConnection, 100);
+              }
+            };
+  
+            checkWebSocketConnection();
+          } else {
+            setLogs((prevLogs) => [
+              ...prevLogs,
+              formatLogMessage("Failed to connect to server"),
+            ]);
+          }
+        })
+        .catch(() => {
+          setLogs((prevLogs) => [
+            ...prevLogs,
+            formatLogMessage("Failed to connect to server"),
+          ]);
+        });
     };
   
     startLogs();
-  }, []);
+  }, [isConnected]);
  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
