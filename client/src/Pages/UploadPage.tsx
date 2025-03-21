@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import {
   CloudUpload as CloudUploadIcon,
-  VolumeUp as VolumeUpIcon,
+  Mic as MicIcon,
+  Stop as StopIcon
 } from "@mui/icons-material";
 import StepperComponent from "../components/StepperComponent";
 import { useWebSocket } from "../contexts/WebSocketContext";
@@ -29,6 +30,46 @@ function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [upload, setUpload] = useState(false);
   const [inputEnabled, setInputEnabled] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+
+  const startRecording = async () => {
+    setUpload(false);
+    setResponse({
+      audio_class: "",
+      file_uuid: "",
+      sr: 0,
+      spectrogram: "",
+      spec_sr: 0
+    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (e) => chunks.push(e.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "audio/wav" });
+        const file = new File([blob], "recording.wav", { type: "audio/wav" });
+        validateAndSetFile(file);
+        handleUpload(file);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Failed to start recording:", error);
+      showErrorToast("Failed to start recording");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
 
   const showErrorToast = (message: string) => {
     setToastMessage(message);
@@ -220,8 +261,52 @@ function UploadPage() {
 
       <Paper elevation={3} sx={{ p: 4, mt: 4, textAlign: "center" }}>
         <Typography variant="h4" gutterBottom color="primary">
-          Upload Your Media
+          Upload or Record Your Media
         </Typography>
+        <Box
+          sx={{
+            border: `2px dashed ${
+              isDragging ? theme.palette.primary.main : theme.palette.divider
+            }`,
+            borderRadius: 2,
+            p: 6,
+            mt: 3,
+            mb: 3,
+            backgroundColor: isDragging
+              ? "rgba(63, 81, 181, 0.08)"
+              : "transparent",
+            transition: "all 0.3s ease",
+            cursor: "pointer",
+            overflow: "auto",
+          }}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => document.getElementById("fileInput")?.click()}
+        >
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+            accept="audio/*"
+            disabled={!inputEnabled}
+          />
+          <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "100%",
+            }}
+          >
+            {file ? file.name : "Drop your file here or click to browse files"}
+          </Typography>
+          <Typography>Supported formats: MP3, WAV, AAC, OGG</Typography>
+        </Box>
 
         <Box
           sx={{
@@ -244,39 +329,18 @@ function UploadPage() {
           onDrop={handleDrop}
           onClick={() => document.getElementById("fileInput")?.click()}
         >
-          <input
-            type="file"
-            id="fileInput"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-            accept="audio/*"
-            disabled={!inputEnabled}
-          />
-          
-          <CloudUploadIcon color="primary" sx={{ fontSize: 64, mb: 2 }} />
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              maxWidth: "100%", // Ensure it adapts to the box size
-            }}
-          >
-            {file ? file.name : "Drop your file here or click to browse files"}
-          </Typography>
-          <Typography>
-            Max file size: 100MB
-          </Typography>
-          {file && (
-            <Typography variant="body2" color="textSecondary">
-              {file.type.includes("audio") ? <VolumeUpIcon sx={{ mr: 1 }} /> : null}
-              {file.type} - {(file.size / (1024 * 1024)).toFixed(2)} MB
-            </Typography>
-          )}
+        <Button
+          variant="contained"
+          color={isRecording ? "secondary" : "primary"}
+          startIcon={isRecording ? <StopIcon /> : <MicIcon />}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent click from reaching file input
+            isRecording ? stopRecording() : startRecording();
+          }}
+        >
+          {isRecording ? "Stop Recording" : "Start Recording"}
+        </Button>
         </Box>
-
         <Box sx={{ mt: 4, display: "flex", justifyContent: "space-between" }}>
           <Button
             variant="outlined"
