@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import {
   CloudUpload as CloudUploadIcon,
-  VolumeUp as VolumeUpIcon,
   Mic as MicIcon,
   Stop as StopIcon
 } from "@mui/icons-material";
@@ -35,6 +34,14 @@ function UploadPage() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
 
   const startRecording = async () => {
+    setUpload(false);
+    setResponse({
+      audio_class: "",
+      file_uuid: "",
+      sr: 0,
+      spectrogram: "",
+      spec_sr: 0
+    });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
