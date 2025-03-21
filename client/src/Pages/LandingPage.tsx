@@ -20,12 +20,11 @@ import {
   NoiseAware as NoiseAwareIcon,
   MusicNote as MusicNoteIcon,
 } from '@mui/icons-material';
-import { useState } from 'react';
 
 function LandingPage() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const [showContent, setShowContent] = useState(true);
+  const showContent = true;
 
   return (
     <Box
