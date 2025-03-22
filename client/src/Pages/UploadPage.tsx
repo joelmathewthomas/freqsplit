@@ -52,6 +52,8 @@ function UploadPage() {
       recorder.onstop = () => {
         const blob = new Blob(chunks, { type: "audio/wav" });
         const file = new File([blob], "recording.wav", { type: "audio/wav" });
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
         validateAndSetFile(file);
         handleUpload(file);
       };
