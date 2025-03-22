@@ -337,6 +337,7 @@ function UploadPage() {
             e.stopPropagation(); // Prevent click from reaching file input
             isRecording ? stopRecording() : startRecording();
           }}
+          disabled={!isConnected}
         >
           {isRecording ? "Stop Recording" : "Start Recording"}
         </Button>
