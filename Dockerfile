@@ -8,9 +8,9 @@ COPY pyproject.toml .
 COPY requirements.txt .
 COPY api/ api/
 COPY src/ src/
-COPY daphne.sh api/
-COPY celery.sh api/
-COPY wrapper.sh api/
+COPY daphne api/
+COPY celery api/
+COPY wrapper api/
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -29,5 +29,5 @@ WORKDIR /app/api
 ENV CELERY_BROKER_URL=redis://redis:6379/0
 
 EXPOSE 8000
-CMD ./wrapper.sh
+CMD ./wrapper
 
