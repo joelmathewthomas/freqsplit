@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Start the first process
-./celery.sh &
+./celery &
 
 # Start the second process
-./daphne.sh &
+./daphne &
 
 # Wait for any process to exit
 wait -n

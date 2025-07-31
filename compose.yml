@@ -1,9 +1,9 @@
 services:
   backend:
-    image: freqsplit-backend
-    container_name: freqback
-    ports:
-      - "8000:8000"
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: freqsplit-api
     depends_on:
       - redis
     networks:
@@ -16,14 +16,16 @@ services:
       - freqnet
 
   frontend:
-    image: freqsplit-frontend    # if already built locally
-    container_name: freqsplit-frontend
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: freqsplit-client
     ports:
-      - "80:80"              # expose Vite dev server port
+      - "80:80"
     networks:
       - freqnet
     depends_on:
-      - backend 
+      - backend
 
 networks:
   freqnet:

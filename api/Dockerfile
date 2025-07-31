@@ -22,8 +22,6 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --no-cache-dir -e . && \
     pip install --no-cache-dir -r requirements.txt
 
-# Ensure scripts are executable
-RUN chmod +x ./api/*.sh
 
 WORKDIR /app/api
 ENV CELERY_BROKER_URL=redis://redis:6379/0
