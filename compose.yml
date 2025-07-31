@@ -1,0 +1,21 @@
+services:
+  backend:
+    image: freqsplit-backend
+    container_name: freqback
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    networks:
+      - freqnet
+
+  redis:
+    image: redis:7
+    container_name: freqsplit-redis
+    networks:
+      - freqnet
+
+networks:
+  freqnet:
+    driver: bridge
+
