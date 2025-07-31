@@ -15,8 +15,15 @@ COPY src/ src/
 # Copy metadata and install deps
 COPY pyproject.toml requirements.txt ./
 RUN pip install --upgrade pip && \
-    pip install --prefix=/install --no-cache-dir -e . && \
-    pip install --prefix=/install --no-cache-dir -r requirements.txt
+    pip install --prefix=/install --no-cache-dir -e .
+
+# --- Patch Demucs bug here ---
+# Fixes the following error when using htdemucs model:
+# RuntimeError: unsupported operation: more than one element of the written-to tensor refers to a single memory location. Please clone() the tensor before performing the operation.
+RUN find /install -type f -path "*/site-packages/demucs/separate.py" \
+    -exec sed -i 's/wav -= ref.mean()/wav = (wav - ref.mean()).clone()/' {} \;
+
+
 
 # Copy source for build-time extras (if needed)
 COPY api/ api/
