@@ -15,6 +15,16 @@ services:
     networks:
       - freqnet
 
+  frontend:
+    image: freqsplit-frontend    # if already built locally
+    container_name: freqsplit-frontend
+    ports:
+      - "5173:5173"              # expose Vite dev server port
+    networks:
+      - freqnet
+    depends_on:
+      - backend 
+
 networks:
   freqnet:
     driver: bridge

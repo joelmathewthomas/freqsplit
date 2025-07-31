@@ -1,0 +1,20 @@
+FROM node:20
+
+WORKDIR /app
+
+# Copy only package files first to leverage Docker cache
+COPY client/package.json client/package-lock.json* ./
+RUN npm install
+
+# Copy rest of the client source
+COPY client/ .
+
+# (Optional) include license for container metadata purposes
+COPY LICENSE .
+
+# Expose Vite default port
+EXPOSE 5173
+
+# Start the Vite dev server and bind to all interfaces
+CMD ["npm", "run", "dev", "--", "--host", "--mode", "docker"]
+
