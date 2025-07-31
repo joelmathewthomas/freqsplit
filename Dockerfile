@@ -8,9 +8,9 @@ COPY pyproject.toml .
 COPY requirements.txt .
 COPY api/ api/
 COPY src/ src/
-COPY daphne api/
-COPY celery api/
-COPY wrapper api/
+COPY docker/daphne api/
+COPY docker/celery api/
+COPY docker/wrapper api/
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
