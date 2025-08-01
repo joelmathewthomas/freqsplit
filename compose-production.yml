@@ -1,0 +1,9 @@
+services:
+  backend:
+    image: ghcr.io/joelmathewthomas/freqsplit-api:latest
+    build: null 
+
+  frontend:
+    image: ghcr.io/joelmathewthomas/freqsplit-client:latest
+    build: null
+

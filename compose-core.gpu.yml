@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: api/Dockerfile
+    image: joelmathewthomas/freqsplit-api:latest
     container_name: freqsplit-api
     depends_on:
       - redis
@@ -26,6 +27,7 @@ services:
     build:
       context: .
       dockerfile: client/Dockerfile
+    image: joelmathewthomas/freqsplit-client:latest
     container_name: freqsplit-client
     ports:
       - "80:80"
