@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: freqsplit-api
+    depends_on:
+      - redis
+    networks:
+      - freqnet
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  redis:
+    image: redis:7
+    container_name: freqsplit-redis
+    networks:
+      - freqnet
+
+  frontend:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: freqsplit-client
+    ports:
+      - "80:80"
+    networks:
+      - freqnet
+    depends_on:
+      - backend
+
+networks:
+  freqnet:
+    driver: bridge
+
