@@ -46,10 +46,18 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY api/ api/
 COPY src/ src/
+COPY pytest.ini .
+COPY tests/ tests/
 COPY LICENSE .
 COPY docker/daphne api/
 COPY docker/celery api/
 COPY docker/wrapper api/
+
+# Test packages and download model checkpoints
+RUN pytest
+RUN rm pytest.ini
+RUN rm -rf tests/
+
 
 # Set working dir for backend
 WORKDIR /app/api
