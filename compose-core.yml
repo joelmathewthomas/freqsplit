@@ -9,6 +9,11 @@ services:
       - redis
     networks:
       - freqnet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 360
 
   redis:
     image: redis:7
@@ -27,8 +32,8 @@ services:
     networks:
       - freqnet
     depends_on:
-      - backend
-
+      backend:
+        condition: service_healthy
 networks:
   freqnet:
     driver: bridge
