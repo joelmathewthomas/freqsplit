@@ -1,0 +1,48 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: joelmathewthomas/freqsplit-api:latest
+    container_name: freqsplit-api
+    depends_on:
+      - redis
+    networks:
+      - freqnet
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+
+  redis:
+    image: redis:7
+    container_name: freqsplit-redis
+    networks:
+      - freqnet
+
+  frontend:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    image: joelmathewthomas/freqsplit-client:latest
+    container_name: freqsplit-client
+    ports:
+      - "80:80"
+    networks:
+      - freqnet
+    depends_on:
+      backend:
+        condition: service_healthy
+
+networks:
+  freqnet:
+    driver: bridge
+
