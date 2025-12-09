@@ -4,7 +4,7 @@ An evolving **audio processing pipeline** designed to separate and enhance audio
 
 ---
 
-🚀 Current Features
+**Current Features**
 
 - **Audio Input Handling**: Uses librosa for reading and handling audio files.
 - **Preprocessing**: Includes resampling, normalization, and trimming using librosa.
@@ -15,7 +15,7 @@ An evolving **audio processing pipeline** designed to separate and enhance audio
 - **Modular Architecture**: Designed for easy extension and customization.
 
 ---
-📁 Project Structure
+**Project Structure**
 
 ```bash
 freqsplit/
@@ -39,10 +39,10 @@ freqsplit/
 └── venv/               # Virtual environment (should be excluded from version control)
 ```
 
-### 📝 Wiki
+### Wiki
 
 For detailed instructions on installing dependencies, setting up Python environments, and configuring the project, visit the [Wiki](https://github.com/joelmathewthomas/freq-split-enhance/wiki).
 
-## 🛡️ License
+## License
 
 This project is licensed under the Apache License 2.0.
